@@ -20,6 +20,7 @@ import React, { FunctionComponent, ReactElement, useEffect, useState } from "rea
 import { getAllUsers } from '../services/scimService';
 import { default as authConfig } from "../config.json";
 import { exchangeToken, generateAuthUrl, parseUrlFragment } from '../services/authService';
+import { jwtDecode } from "jwt-decode";
 
 export interface CSRUtilsHomeInterface {
   
@@ -46,6 +47,7 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
   const [idToken, setIdToken] = useState<string | null>(null);
   const [subjectToken, setSubjectToken] = useState<string | null>(null);
   const [impersonateAccessToken, setImpersonateAccessToken] = useState<string | null>(null);
+  const [impersonatedSubject, setImpersonatedSubject] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -62,7 +64,34 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
     if (derivedResponse?.accessToken) {
       fetchUsers();
     }
+    
   }, [derivedResponse?.accessToken]);
+
+  useEffect(() => {
+    if (users && users.length > 0) {
+
+      let userId = "";
+      try {
+        const decodedToken = jwtDecode(impersonateAccessToken);
+        userId = decodedToken.sub;
+        let username = "";
+        for (const user of users) {
+          if (user.id === userId) {
+            username = user.userName;
+          }
+        }
+
+        if (username != "") {
+          setImpersonatedSubject(username);
+        } else {
+          console.log("Error getting the impersonated subject username.");
+        }
+      } catch (error) {
+        console.error('Failed to decode JWT token:', error);
+      }
+    }
+    
+  }, [impersonateAccessToken]);
 
   const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedUserId(event.target.value);
@@ -76,6 +105,13 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
     );
     
     window.location.href = authUrl;
+  };
+
+  const handleProceed = () => {
+
+    const actor = derivedResponse?.authenticateResponse?.username;
+    const url = `${authConfig.staplesAppPath}?actor=${actor}&sub=${impersonatedSubject}&token=${impersonateAccessToken}`;
+    window.open(url, '_blank');
   };
 
   useEffect(() => {
@@ -95,7 +131,6 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
             idToken
           });
           
-          console.log(response);
           setImpersonateAccessToken(response.access_token);
           
         } catch (err) {
@@ -140,12 +175,21 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
             { impersonateAccessToken && 
 
               <div className="impersonated-token">
-                <h3><b>Impersonated Access Token</b></h3>
+                <h3><b>Impersonated Access Token for <strong>{impersonatedSubject}</strong></b></h3>
                 <div className="code">
                     <code>
                         <span className="id-token-0">{ impersonateAccessToken }</span>
                     </code>
                 </div>
+                <button
+                    className="btn primary"
+                    onClick={ () => {
+                      handleProceed();
+                    } }
+                    style={{backgroundColor: '#b4a521', width: '250px'}}
+                >
+                    Proceed to Staples.com
+                </button>
               </div>
             }
           </div>
