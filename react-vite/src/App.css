@@ -5,3 +5,116 @@
   align-items: center;
   text-align: center;
 }
+
+/* Apply font-family to all elements and override any other font settings */
+* {
+  font-family: 'Verdana', 'Arial', sans-serif !important; /* Using !important to override other settings */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.footer {
+  background-color: #c00;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  margin-top: auto; /* Pushes the footer to the bottom */
+}
+
+.banner {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.banner-image {
+  width: 100%;
+  height: auto;
+}
+
+.welcome-text {
+  text-align: center;
+  color: black; /* Make the text black */
+  margin-top: 20px;
+}
+
+.section {
+  padding: 20px;
+}
+
+header {
+  background-color: #c00;
+  padding: 10px 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+header .logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+header .logo-image {
+  height: 50px;
+}
+
+header .search-bar {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+header .search-bar input {
+  border: none;
+  outline: none;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.header-icon-button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  padding: 5px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.header-icon-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Product Card Styles */
+.product-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
