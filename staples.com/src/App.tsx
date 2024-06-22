@@ -8,6 +8,7 @@ import {
 import Header from "./components/Header";
 import { Container } from '@mui/material';
 import HomePage from "./pages/HomePage";
+import Impersonation from "./components/Impersonation";
 
 function App() {
   const { user } = useAuthentication();
@@ -18,15 +19,18 @@ function App() {
     <>
       <Header />
       <Container>
+        <div className="signInContainer">
+          <SignIn 
+            showSignUp={true}
+            showFooter={false}
+          />
+          <SignedIn>
+            <h5>Welcome, {user?.userName}</h5>
+            <SignOutButton />
+          </SignedIn>
+        </div>
+        <Impersonation />
         <HomePage />
-        <SignIn 
-          showSignUp={true}
-        />
-
-        <SignedIn>
-          <h5>Welcome, {user?.userName}</h5>
-          <SignOutButton />
-        </SignedIn>
       </Container>
     </>
   );

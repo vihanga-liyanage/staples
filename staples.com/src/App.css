@@ -118,3 +118,20 @@ header .search-bar input {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.signInContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.code {
+  background: #272822;
+  display: block;
+  word-break: break-all;
+  padding: 20px;
+  text-align: left;
+  border-radius: 4px;
+  color: #fd971f;
+  font-size: small;
+}
+
