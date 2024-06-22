@@ -135,3 +135,15 @@ header .search-bar input {
   font-size: small;
 }
 
+.overlay {
+  position: fixed; /* Fixed position to stay in place even when scrolling */
+  top: 0; /* Position at the top of the viewport */
+  left: 0; /* Position at the left of the viewport */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 9999; /* High z-index to appear above other elements */
+  display: flex; /* Flexbox to center content */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
