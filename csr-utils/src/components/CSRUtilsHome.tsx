@@ -19,8 +19,7 @@
 import React, { FunctionComponent, ReactElement, useEffect, useState } from "react";
 import { getAllUsers } from '../services/scimService';
 import { default as authConfig } from "../config.json";
-import { exchangeToken, generateAuthUrl, parseUrlFragment } from '../services/authService';
-import { jwtDecode } from "jwt-decode";
+import { generateAuthUrl, exchangeToken } from '../services/authService';
 
 export interface CSRUtilsHomeInterface {
   
@@ -44,15 +43,12 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [idToken, setIdToken] = useState<string | null>(null);
-  const [subjectToken, setSubjectToken] = useState<string | null>(null);
-  const [impersonateAccessToken, setImpersonateAccessToken] = useState<string | null>(null);
-  const [impersonatedSubject, setImpersonatedSubject] = useState<string | null>(null);
+  const [picToken, setPicToken] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const result = await getAllUsers(authConfig?.baseUrl, derivedResponse?.accessToken);
+        const result = await getAllUsers(authConfig?.PICURL, picToken);
         setUsers(result.Resources); // Assuming the response has a Resources array
       } catch (err) {
         setError('Failed to fetch users');
@@ -61,37 +57,25 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
       }
     };
 
-    if (derivedResponse?.accessToken) {
+    if (picToken) {
       fetchUsers();
     }
     
-  }, [derivedResponse?.accessToken]);
+  }, [picToken]);
 
   useEffect(() => {
-    if (users && users.length > 0) {
 
-      let userId = "";
-      try {
-        const decodedToken = jwtDecode(impersonateAccessToken);
-        userId = decodedToken.sub;
-        let username = "";
-        for (const user of users) {
-          if (user.id === userId) {
-            username = user.userName;
-          }
-        }
-
-        if (username != "") {
-          setImpersonatedSubject(username);
-        } else {
-          console.log("Error getting the impersonated subject username.");
-        }
-      } catch (error) {
-        console.error('Failed to decode JWT token:', error);
-      }
+    const getPICToken = async () => {
+      const token = await exchangeToken(derivedResponse?.accessToken);
+      setPicToken(token);
     }
     
-  }, [impersonateAccessToken]);
+    if (derivedResponse?.accessToken) {
+      if (!picToken) {
+        getPICToken();
+      }
+    }
+  }, [derivedResponse?.accessToken]);
 
   const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedUserId(event.target.value);
@@ -103,45 +87,9 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
       selectedUserId,
       '',
     );
-    
-    window.location.href = authUrl;
+    window.open(authUrl, '_blank');
+    // window.location.href = authUrl;
   };
-
-  const handleProceed = () => {
-
-    const actor = derivedResponse?.authenticateResponse?.username;
-    const url = `${authConfig.staplesAppPath}?actor=${actor}&sub=${impersonatedSubject}&token=${impersonateAccessToken}`;
-    window.open(url, '_blank');
-  };
-
-  useEffect(() => {
-    if (window.location.hash) {
-      const fragments = parseUrlFragment(window.location.href);
-      setIdToken(fragments.id_token || null);
-      setSubjectToken(fragments.subject_token || null);
-    }
-  }, []);
-
-  useEffect(() => {
-    const fetchImpersonationAccessToken = async () => {
-      if (subjectToken) {
-        try {
-          const response = await exchangeToken({
-            subjectToken,
-            idToken
-          });
-          
-          setImpersonateAccessToken(response.access_token);
-          
-        } catch (err) {
-          setError('Failed to exchange token');
-        }
-      }
-    };
-
-    fetchImpersonationAccessToken();
-  }, [subjectToken, idToken]);
-
 
   return (
     <>
@@ -171,27 +119,6 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
             >
                 Impersonate
             </button>
-
-            { impersonateAccessToken && 
-
-              <div className="impersonated-token">
-                <h3><b>Impersonated Access Token for <strong>{impersonatedSubject}</strong></b></h3>
-                <div className="code">
-                    <code>
-                        <span className="id-token-0">{ impersonateAccessToken }</span>
-                    </code>
-                </div>
-                <button
-                    className="btn primary"
-                    onClick={ () => {
-                      handleProceed();
-                    } }
-                    style={{backgroundColor: '#b4a521', width: '250px'}}
-                >
-                    Proceed to Staples.com
-                </button>
-              </div>
-            }
           </div>
         )}
       </div>
