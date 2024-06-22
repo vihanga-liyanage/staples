@@ -32,6 +32,7 @@ const Header: FunctionComponent = (): ReactElement => {
     event: Hooks.SignOut,
     callback: () => {
       setIsSignedIn(false);
+      window.location.reload();
     },
   });
 
@@ -44,7 +45,6 @@ const Header: FunctionComponent = (): ReactElement => {
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    console.log("handleClickOutside");
     const target = event.target as HTMLElement;
     if (target.id === 'sign-in-box-container') {
       toggleOverlay();
