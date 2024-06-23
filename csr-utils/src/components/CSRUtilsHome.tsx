@@ -16,19 +16,12 @@
  * under the License.
  */
 
-import React, { FunctionComponent, ReactElement, useEffect, useState } from "react";
-import { getAllUsers } from '../services/scimService';
+import React, { FunctionComponent, ReactElement, useState } from "react";
 import { default as authConfig } from "../config.json";
-import { generateAuthUrl, exchangeToken } from '../services/authService';
 
 export interface CSRUtilsHomeInterface {
   
   derivedResponse?: any;
-}
-
-interface User {
-  id: string;
-  userName: string;
 }
 
 export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
@@ -39,56 +32,17 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
     derivedResponse
   } = props;
 
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [picToken, setPicToken] = useState<string | null>(null);
+  const [impersonateeUsername, setImpersonateeUsername] = useState('');
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const result = await getAllUsers(authConfig?.PICURL, picToken);
-        setUsers(result.Resources); // Assuming the response has a Resources array
-      } catch (err) {
-        setError('Failed to fetch users');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (picToken) {
-      fetchUsers();
-    }
-    
-  }, [picToken]);
-
-  useEffect(() => {
-
-    const getPICToken = async () => {
-      const token = await exchangeToken(derivedResponse?.accessToken);
-      setPicToken(token);
-    }
-    
-    if (derivedResponse?.accessToken) {
-      if (!picToken) {
-        getPICToken();
-      }
-    }
-  }, [derivedResponse?.accessToken]);
-
-  const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedUserId(event.target.value);
-  };
+  const handleInputChange = (event: { target: { value: any; }; }) => {
+    const value = event.target.value;
+    setImpersonateeUsername(value);
+};
 
   const handleImpersonation = () => {
 
-    const authUrl = generateAuthUrl(
-      selectedUserId,
-      '',
-    );
-    window.open(authUrl, '_blank');
-    // window.location.href = authUrl;
+    // window.open(authUrl, '_blank');
+    window.location.href = `${authConfig.staplesB2CAppPath}?impersonateeUsername=${impersonateeUsername}`;
   };
 
   return (
@@ -97,30 +51,22 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
         Welcome {derivedResponse?.authenticateResponse?.displayName}!
       </div>
       <div>
-        <h2>Select a user to impersonate</h2>
-        {loading && <p>Loading...</p>}
-        {error && <p>{error}</p>}
-        {!loading && !error && users.length > 0 && (
-          <div>
-            <select id="userSelect" onChange={handleUserChange} className="select-box">
-              <option value="">---</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.userName}
-                </option>
-              ))}
-            </select>
-            <button
-                disabled={!selectedUserId}
-                className="btn primary impersonate"
-                onClick={ () => {
-                  handleImpersonation();
-                } }
-            >
-                Impersonate
-            </button>
-          </div>
-        )}
+        <h2>Please enter the username of the user to impersonate</h2>
+        <input 
+          type="text" 
+          value={impersonateeUsername}
+          onChange={handleInputChange}
+          placeholder="Enter something..."
+          className="text-input"
+        />
+        <button
+          className="btn primary impersonate"
+          onClick={ () => {
+            handleImpersonation();
+          } }
+        >
+          Impersonate
+        </button>
       </div>
 
     </>

@@ -3,14 +3,29 @@
 import { default as authConfig } from "../config.json";
 import axios from 'axios';
 
-const TOKEN_EXCHANGE_URL = `${authConfig.baseUrl}/oauth2/token`;
-
-interface TokenExchangeParams {
-  subjectToken: string;
-  idToken: string;
-}
-
 export const generateAuthUrl = (
+  impersonateeUsername: string,
+  otherRequiredScopes: string,
+  nonce: string = "asdfwe34",
+  state: string = "sample_state"
+): string => {
+  const baseUrl = `${authConfig.PICURL}/oauth2/authorize`;
+  const params = new URLSearchParams({
+    response_type: 'code',
+    redirect_uri: authConfig.staplesB2CAppPath,
+    client_id: authConfig.staplesB2CClientID,
+    state: state,
+    scope: `openid openid groups email profile internal_user_mgt_list internal_user_mgt_view internal_user_mgt_update internal_user_mgt_create internal_user_mgt_delete internal_user_impersonate ${otherRequiredScopes}`,
+    nonce: nonce,
+    response_mode: 'query',
+    impersonateeUsername: impersonateeUsername,
+    fidp: 'staplesCorporateIDP'
+  });
+    
+  return `${baseUrl}?${params.toString()}`;
+};
+
+export const generateImpersonationAuthUrl = (
   selectedUserId: string,
   otherRequiredScopes: string,
   nonce: string = "asdfwe34",
@@ -42,7 +57,7 @@ export const exchangeToken = async (jwtToken: string) => {
   data.append('subject_token_type', 'urn:ietf:params:oauth:token-type:jwt');
   data.append('requested_token_type', 'urn:ietf:params:oauth:token-type:access_token');
   data.append('grant_type', 'urn:ietf:params:oauth:grant-type:token-exchange');
-  data.append('scope', 'internal_user_mgt_list');
+  data.append('scope', 'openid email profile internal_user_mgt_create internal_user_mgt_delete internal_user_mgt_list internal_user_mgt_update internal_user_mgt_view');
 
   try {
     const response = await axios.post(url, data, {
