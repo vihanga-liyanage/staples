@@ -6,7 +6,7 @@ import Impersonation from "./components/Impersonation";
 import Footer from "./components/Footer";
 
 function App() {
-  
+    
   return (
     <>
       <Header />

@@ -6,19 +6,47 @@ import ListIcon from '@mui/icons-material/List';
 import logo from '../assets/images/logo.png';
 import {
   SignIn,
-  SignedIn,
   SignOutButton,
   useAuthentication,
   useOn,
   Hooks
 } from "@asgardeo/react";
 import { useState } from 'react';
+import { jwtDecode } from "jwt-decode";
 
 const Header: FunctionComponent = (): ReactElement => {
+
+  interface DecodedToken {
+    given_name?: string;
+    family_name?: string;
+    [key: string]: any;
+  };
+
+  const envVariables = import.meta.env;
 
   const { user } = useAuthentication();
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isSignInOverlayVisible, setSignInOverlayVisible] = useState(false);
+  const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
+  const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    
+    const access_token = localStorage.getItem('access_token');
+    const impersonateeUserId = localStorage.getItem('impersonateeUserId');
+
+    if (access_token && impersonateeUserId && !impersonatorUserName) {
+      try {
+        const decoded: DecodedToken = jwtDecode(access_token);
+        setImpersonatorUserName(`${decoded.given_name} ${decoded.family_name}`);        
+        setIsSignedIn(true);
+        setImpersonateeUsername(localStorage.getItem('impersonateeUsername'));
+      } catch (error) {
+        console.error('Failed to decode JWT token:', error);
+      }
+    }    
+    
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -38,6 +66,14 @@ const Header: FunctionComponent = (): ReactElement => {
 
   const handleSignInClick =  () => {
     toggleOverlay();
+  }
+
+  const handleSignOutClick =  () => {
+    console.log('Signing out...');
+    localStorage.removeItem('impersonateeUsername');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('impersonateeUserId');
+    window.location.href = envVariables.VITE_CSR_APP_PATH;
   }
 
   const toggleOverlay = () => {
@@ -76,16 +112,26 @@ const Header: FunctionComponent = (): ReactElement => {
         <SearchIcon />
         <input type="text" placeholder="Search..." />
       </div>
-      <SignedIn>
-        { isSignedIn &&
-          <>
-            <h5 style={{padding: '0px 10px 0px 10px'}}>Welcome, {user.name.givenName} {user.name.familyName}</h5>
-            <SignOutButton />
-          </>
-        }
-      </SignedIn>
+      { isSignedIn && !impersonatorUserName &&
+        <>
+          <h5 style={{padding: '0px 10px 0px 10px'}}>
+            Welcome, {user.name.givenName} {user.name.familyName}
+          </h5>
+          <SignOutButton />
+        </>
+      }
+      { isSignedIn && impersonatorUserName && impersonateeUsername &&
+        <>
+          <h5 style={{padding: '0px 10px 0px 10px'}}>
+            Welcome, {impersonateeUsername} (Impersonator: {impersonatorUserName})
+          </h5>
+          <button className="sign-out-button" onClick={ () => {handleSignOutClick();} }>Sign Out</button>
+        </>
+      }
       <div className="header-buttons">
-        <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><PersonIcon /></button>
+        { !isSignedIn &&
+          <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><PersonIcon /></button>
+        }
         <button className="header-icon-button"><ListIcon /></button>
       </div>
     </header>

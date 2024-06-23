@@ -156,3 +156,18 @@ header .search-bar input {
   font-size: 24px;
   cursor: pointer;
 }
+
+.sign-out-button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 9px;
+  cursor: pointer;
+}
+
+.errorBox {
+  color: #c00;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+}
