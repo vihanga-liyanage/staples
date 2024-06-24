@@ -13,7 +13,6 @@ import {
 } from "@asgardeo/react";
 import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { colors } from '@mui/material';
 import ProductListSelected from './ProductListSelected';
 
 const Header: FunctionComponent = (): ReactElement => {
@@ -120,11 +119,10 @@ const Header: FunctionComponent = (): ReactElement => {
         </div>
       }
 
-      
-       {modalVisible && (
+      {modalVisible && (
         <div className="popup-box">
           <button type="button" className="close-button" onClick={closeModal}>
-            X
+            x
           </button>
           <h3>Favourite Products</h3>
           <ProductListSelected />
@@ -132,7 +130,6 @@ const Header: FunctionComponent = (): ReactElement => {
         </div>
       )}
       {modalVisible && <div className="popup-box-overlay" onClick={closeModal} />}
-
 
       <div className="logo">
         <img src={logo} alt="Staples Logo" className="logo-image" />
@@ -154,7 +151,7 @@ const Header: FunctionComponent = (): ReactElement => {
           <h5 style={{padding: '0px 10px 0px 10px'}}>
             Welcome, {impersonateeUsername} (Impersonator: {impersonatorUserName})
           </h5>
-          <button className="sign-out-button" onClick={ () => {handleSignOutClick();} }>Sign Out</button>
+          <button className="sign-out-button" onClick={ () => {handleSignOutClick();} }>End Impersonation Session</button>
         </>
       }
       <div className="header-buttons">
@@ -167,8 +164,6 @@ const Header: FunctionComponent = (): ReactElement => {
         { isSignedIn &&
           <button className="header-icon-button" onClick={ () => {openModal();} }><ListIcon /></button>
         }
-
-     
       </div>
     </header>
   );

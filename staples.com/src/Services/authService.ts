@@ -37,7 +37,7 @@ export const generateImpersonationAuthUrl = (
     redirect_uri: envVariables.VITE_SIGN_IN_REDIRECT_URL,
     client_id: envVariables.VITE_CLIENT_ID,
     state: state,
-    scope: `internal_user_impersonate openid ${otherRequiredScopes}`,
+    scope: `internal_user_impersonate internal_login openid ${otherRequiredScopes}`,
     requested_subject: selectedUserId,
     nonce: nonce,
     fidp: 'staplesCorporateIDP'

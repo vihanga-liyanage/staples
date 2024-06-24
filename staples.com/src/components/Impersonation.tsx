@@ -16,8 +16,10 @@ const Impersonation: FunctionComponent = (): ReactElement => {
   const fetchImpersonateeUser = async (access_token: string, impersonateeUsername: string) => {
     try {
       const response = await getUserIDByUsername(envVariables.VITE_BASE_URL, access_token, impersonateeUsername);
+      console.log(response);
+      
       if (response.totalResults !== 1) {        
-        setError('Impersonatee username error!');
+        setError("Couldn't find a user with the username: " + impersonateeUsername);
       } else {
         const id = response.Resources[0].id;
         setImpersonateeUserId(id);
@@ -67,13 +69,15 @@ const Impersonation: FunctionComponent = (): ReactElement => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const impersonateeUsernameQueryParam = urlParams.get('impersonateeUsername');
-    const impersonateeUsername = localStorage.getItem('impersonateeUsername');
+    const impersonateeUsernameFromLocalStorage = localStorage.getItem('impersonateeUsername');
     const access_token = localStorage.getItem('access_token');
 
     if (impersonateeUsernameQueryParam) {
 
       // If impersonateeUsernameQueryParam is present in the URL, save it and trigger auth
       localStorage.setItem('impersonateeUsername', impersonateeUsernameQueryParam);
+      localStorage.removeItem('impersonateeUserId');
+      localStorage.removeItem('access_token');
       setError(null);    
       window.location.href = generateAuthUrl();
     } else if (code) {
@@ -94,13 +98,13 @@ const Impersonation: FunctionComponent = (): ReactElement => {
       setIdToken(fragments.id_token);
       setSubjectToken(fragments.subject_token);
       setError(null);
-    } else if (!impersonateeUserId && impersonateeUsername && access_token) {
+    } else if (!impersonateeUserId && impersonateeUsernameFromLocalStorage && access_token) {
       
       // If impersonateeUsername and access_token is found in the localstorage, get impersonatee user ID
       if (localStorage.getItem('impersonateeUserId')) {
         setImpersonateeUserId(localStorage.getItem('impersonateeUserId'));
       } else {
-        fetchImpersonateeUser(access_token, impersonateeUsername);
+        fetchImpersonateeUser(access_token, impersonateeUsernameFromLocalStorage);
       }
     }
     

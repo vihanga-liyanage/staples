@@ -163,6 +163,7 @@ header .search-bar input {
   border: none;
   padding: 9px;
   cursor: pointer;
+  border-radius: 22px;
 }
 
 .errorBox {
