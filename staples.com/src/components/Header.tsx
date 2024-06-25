@@ -13,9 +13,14 @@ import {
 } from "@asgardeo/react";
 import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
-import ProductListSelected from './ProductListSelected';
+import UserProductList from './UserProductList';
+import { Product } from '../App';
 
-const Header: FunctionComponent = (): ReactElement => {
+interface HeaderProps {
+  products: Product[];
+}
+
+const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   interface DecodedToken {
     given_name?: string;
@@ -25,7 +30,7 @@ const Header: FunctionComponent = (): ReactElement => {
 
   const envVariables = import.meta.env;
 
-  const { user } = useAuthentication();
+  const { user, accessToken } = useAuthentication();
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isSignInOverlayVisible, setSignInOverlayVisible] = useState(false);
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
@@ -42,15 +47,20 @@ const Header: FunctionComponent = (): ReactElement => {
     setModalVisible(false);
   };
 
+  useEffect(() => {
+    localStorage.setItem('userAccessToken', accessToken);
+    
+  }, [accessToken]);
 
+  // Extract info from impersonated access token
   useEffect(() => {
     
-    const access_token = localStorage.getItem('access_token');
+    const impersonatorAccessToken = localStorage.getItem('impersonatorAccessToken');
     const impersonateeUserId = localStorage.getItem('impersonateeUserId');
 
-    if (access_token && impersonateeUserId && !impersonatorUserName) {
+    if (impersonatorAccessToken && impersonateeUserId && !impersonatorUserName) {
       try {
-        const decoded: DecodedToken = jwtDecode(access_token);
+        const decoded: DecodedToken = jwtDecode(impersonatorAccessToken);
         setImpersonatorUserName(`${decoded.given_name} ${decoded.family_name}`);        
         setIsSignedIn(true);
         setImpersonateeUsername(localStorage.getItem('impersonateeUsername'));
@@ -58,7 +68,6 @@ const Header: FunctionComponent = (): ReactElement => {
         console.error('Failed to decode JWT token:', error);
       }
     }    
-    
   }, []);
 
   useEffect(() => {
@@ -73,6 +82,7 @@ const Header: FunctionComponent = (): ReactElement => {
     event: Hooks.SignOut,
     callback: () => {
       setIsSignedIn(false);
+      localStorage.removeItem('userAccessToken');
       window.location.reload();
     },
   });
@@ -84,8 +94,9 @@ const Header: FunctionComponent = (): ReactElement => {
   const handleSignOutClick =  () => {
     console.log('Signing out...');
     localStorage.removeItem('impersonateeUsername');
-    localStorage.removeItem('access_token');
+    localStorage.removeItem('impersonatorAccessToken');
     localStorage.removeItem('impersonateeUserId');
+    localStorage.removeItem('userAccessToken');
     window.location.href = envVariables.VITE_CSR_APP_PATH;
   }
 
@@ -119,17 +130,17 @@ const Header: FunctionComponent = (): ReactElement => {
         </div>
       }
 
-      {modalVisible && (
+      { modalVisible && (
         <div className="popup-box">
           <button type="button" className="close-button" onClick={closeModal}>
             x
           </button>
           <h3>Favourite Products</h3>
-          <ProductListSelected />
+          <UserProductList products={products}/>
 
         </div>
       )}
-      {modalVisible && <div className="popup-box-overlay" onClick={closeModal} />}
+      { modalVisible && <div className="popup-box-overlay" onClick={closeModal} /> }
 
       <div className="logo">
         <img src={logo} alt="Staples Logo" className="logo-image" />

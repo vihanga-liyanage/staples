@@ -35,3 +35,27 @@ export const getUserIDByUsername = async (baseUrl: string, accessToken: string, 
     throw error;
   }
 };
+
+// Get products of a user through SCIM Me
+export const getUserProductIds = async (accessToken: string) => {
+
+  const url = 'https://localhost:9443/scim2/Me?attributes=urn:scim:wso2:schema.products';
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    const productIdsString = response.data['urn:scim:wso2:schema'].products;    
+    return productIdsString.split(',').map(Number);
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.log(err.response?.data?.error_description || err.message);
+    } else {
+      console.log('An unexpected error occurred');
+    }
+  }
+  return [];
+};

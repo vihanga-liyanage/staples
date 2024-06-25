@@ -2,8 +2,13 @@ import { FunctionComponent, ReactElement } from 'react';
 import Banner from '../components/Banner';
 import Section from '../components/Section';
 import ProductList from '../components/ProductList';
+import { Product } from '../App';
 
-const HomePage: FunctionComponent = (): ReactElement => {
+interface HeaderProps {
+  products: Product[];
+}
+
+const HomePage: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   return (
     <div>
@@ -11,7 +16,7 @@ const HomePage: FunctionComponent = (): ReactElement => {
         
       <Banner />
       <Section title="Featured Products">
-        <ProductList />
+        <ProductList products={products} />
       </Section>
     </div>
   );
