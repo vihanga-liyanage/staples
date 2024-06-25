@@ -8,12 +8,14 @@
 
 /* Apply font-family to all elements and override any other font settings */
 * {
-  font-family: 'Verdana', 'Arial', sans-serif !important; /* Using !important to override other settings */
+  font-family: 'Verdana', 'Arial', sans-serif !important;
+  /* Using !important to override other settings */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -34,7 +36,8 @@ code {
   text-align: center;
   padding: 20px;
   width: 100%;
-  margin-top: auto; /* Pushes the footer to the bottom */
+  margin-top: auto;
+  /* Pushes the footer to the bottom */
 }
 
 .banner {
@@ -52,7 +55,8 @@ code {
 
 .welcome-text {
   text-align: center;
-  color: black; /* Make the text black */
+  color: black;
+  /* Make the text black */
   margin-top: 20px;
 }
 
@@ -136,17 +140,30 @@ header .search-bar input {
 }
 
 .overlay {
-  position: fixed; /* Fixed position to stay in place even when scrolling */
-  top: 0; /* Position at the top of the viewport */
-  left: 0; /* Position at the left of the viewport */
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  z-index: 9999; /* High z-index to appear above other elements */
-  display: flex; /* Flexbox to center content */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  position: fixed;
+  /* Fixed position to stay in place even when scrolling */
+  top: 0;
+  /* Position at the top of the viewport */
+  left: 0;
+  /* Position at the left of the viewport */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent background */
+  z-index: 9999;
+  /* High z-index to appear above other elements */
+  display: flex;
+  /* Flexbox to center content */
+  justify-content: center;
+  /* Center horizontally */
+  align-items: center;
+  /* Center vertically */
+  display: flex;
+  flex-direction: column;
 }
+
 .close-button {
   position: absolute;
   top: 10px;
@@ -164,6 +181,22 @@ header .search-bar input {
   padding: 9px;
   cursor: pointer;
 }
+
+.sign-up-button {
+  background: black;
+  color: white;
+  border-radius: 4px;
+  padding: 15px;
+  cursor: pointer;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box;
+  vertical-align: middle;
+  font-size: 1rem;
+  font-weight: 400;
+  margin-top: -120px;
+}
+
 
 .errorBox {
   color: #c00;
@@ -197,8 +230,10 @@ header .search-bar input {
   }
 
   /* Hide scrollbar for IE, Edge and Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .popup-box-overlay {
@@ -217,4 +252,121 @@ header .search-bar input {
   width: 80px;
   background-size: 100%;
   background-repeat: no-repeat;
+}
+
+.signup-box {
+  background-color: white;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  min-height: 80%;
+  border-radius: 12px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: auto;
+  padding: 0;
+  padding: 25px !important;
+  min-width: 30%;
+  color: rgba(0, 0, 0, 0.87);
+  font-family: 'Verdana', 'Arial', sans-serif !important;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.signup-box h5 {
+  margin: 0px;
+  font-family: Gilmer;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.signup {
+  font-weight: bold;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  font-weight: 400;
+  font-size: 1rem;
+  width: 80%;
+}
+
+.user-form input {
+  height: 2.5em;
+  margin: 0px;
+  animation-name: mui-auto-fill-cancel;
+  animation-duration: 10ms;
+  font-weight: 400;
+  font-size: 1rem;
+  cursor: text;
+  width: 100%;
+  border-radius: 4px;
+  padding-left: 15px;
+  border-color: #bdbdbd;
+  text-align: left;
+}
+
+.user-form label {
+  font-weight: 400;
+  font-size: 1rem;
+  width: 100%;
+  text-align: left;
+}
+
+.user-form button {
+  line-height: 1.75;
+  width: 100%;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(270deg, var(--oxygen-palette-gradients-primary-stop2), var(--oxygen-palette-gradients-primary-stop1));
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 2px;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.user-form button:hover {
+  cursor: hand;
+}
+
+.user-form .error-message {
+  border-radius: 12px;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 6px 16px;
+  color: var(--oxygen-palette-Alert-errorColor);
+  background-color: var(--oxygen-palette-Alert-errorStandardBg);
+}
+
+.user-form .success-message {
+  border-radius: 12px;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 6px 16px;
+  color: green;
+  background-color: rgb(216, 250, 216);
 }
