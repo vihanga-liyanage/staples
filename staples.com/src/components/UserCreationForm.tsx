@@ -34,6 +34,7 @@ function UserCreationForm() {
       headers: {
         'Authorization': "Basic " + credentials, // Base64 encoded credentials
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Access-Control-Allow-Origin': '*',
       },
       body: 'grant_type=client_credentials&scope=internal_user_mgt_create',
     });
