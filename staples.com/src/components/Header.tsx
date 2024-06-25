@@ -13,7 +13,6 @@ import {
 } from "@asgardeo/react";
 import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
-
 import ProductListSelected from './ProductListSelected';
 import UserCreationForm from './UserCreationForm';
 
@@ -47,21 +46,21 @@ const Header: FunctionComponent = (): ReactElement => {
 
 
   useEffect(() => {
-
+    
     const access_token = localStorage.getItem('access_token');
     const impersonateeUserId = localStorage.getItem('impersonateeUserId');
 
     if (access_token && impersonateeUserId && !impersonatorUserName) {
       try {
         const decoded: DecodedToken = jwtDecode(access_token);
-        setImpersonatorUserName(`${decoded.given_name} ${decoded.family_name}`);
+        setImpersonatorUserName(`${decoded.given_name} ${decoded.family_name}`);        
         setIsSignedIn(true);
         setImpersonateeUsername(localStorage.getItem('impersonateeUsername'));
       } catch (error) {
         console.error('Failed to decode JWT token:', error);
       }
-    }
-
+    }    
+    
   }, []);
 
   useEffect(() => {
@@ -69,8 +68,8 @@ const Header: FunctionComponent = (): ReactElement => {
       setSignInOverlayVisible(false);
       setSignUpOverlayVisible(false);
       setIsSignedIn(true);
-    }
-
+    }    
+    
   }, [user]);
 
   useOn({
@@ -81,7 +80,7 @@ const Header: FunctionComponent = (): ReactElement => {
     },
   });
 
-  const handleSignInClick = () => {
+  const handleSignInClick =  () => {
     toggleOverlay();
   }
 
@@ -90,13 +89,13 @@ const Header: FunctionComponent = (): ReactElement => {
     toggleSignupOverlay();
   };
 
-  const handleSignOutClick = () => {
+  const handleSignOutClick =  () => {
     console.log('Signing out...');
     localStorage.removeItem('impersonateeUsername');
     localStorage.removeItem('access_token');
     localStorage.removeItem('impersonateeUserId');
     window.location.href = envVariables.VITE_CSR_APP_PATH;
-  };
+  }
 
   const toggleOverlay = () => {
     setSignInOverlayVisible(!isSignInOverlayVisible);
@@ -125,12 +124,12 @@ const Header: FunctionComponent = (): ReactElement => {
 
   return (
     <header>
-      {isSignInOverlayVisible &&
+      { isSignInOverlayVisible && 
         <div className="signInContainer overlay" id='sign-in-box-container'>
-          <SignIn
-            showSignUp={false}
+          <SignIn 
+            showSignUp={true}
             showFooter={false}
-          />
+          />          
         </div>
       }
 
@@ -147,7 +146,7 @@ const Header: FunctionComponent = (): ReactElement => {
       {modalVisible && (
         <div className="popup-box">
           <button type="button" className="close-button" onClick={closeModal}>
-            X
+            x
           </button>
           <h3>Favourite Products</h3>
           <ProductListSelected />
@@ -156,7 +155,6 @@ const Header: FunctionComponent = (): ReactElement => {
       )}
       {modalVisible && <div className="popup-box-overlay" onClick={closeModal} />}
 
-
       <div className="logo">
         <img src={logo} alt="Staples Logo" className="logo-image" />
       </div>
@@ -164,37 +162,35 @@ const Header: FunctionComponent = (): ReactElement => {
         <SearchIcon />
         <input type="text" placeholder="Search..." />
       </div>
-      {isSignedIn && !impersonatorUserName &&
+      { isSignedIn && !impersonatorUserName &&
         <>
-          <h5 style={{ padding: '0px 10px 0px 10px' }}>
+          <h5 style={{padding: '0px 10px 0px 10px'}}>
             Welcome, {user.name.givenName} {user.name.familyName}
           </h5>
           <SignOutButton />
         </>
       }
-      {isSignedIn && impersonatorUserName && impersonateeUsername &&
+      { isSignedIn && impersonatorUserName && impersonateeUsername &&
         <>
-          <h5 style={{ padding: '0px 10px 0px 10px' }}>
+          <h5 style={{padding: '0px 10px 0px 10px'}}>
             Welcome, {impersonateeUsername} (Impersonator: {impersonatorUserName})
           </h5>
-          <button className="sign-out-button" onClick={() => { handleSignOutClick(); }}>Sign Out</button>
+          <button className="sign-out-button" onClick={ () => {handleSignOutClick();} }>End Impersonation Session</button>
         </>
       }
       <div className="header-buttons">
-        {!isSignedIn &&
-          <button className="header-icon-button" onClick={() => { handleSignInClick(); }}><PersonIcon /></button>
+        { !isSignedIn &&
+          <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><PersonIcon /></button>
         }
-        {!isSignedIn &&
+	{!isSignedIn &&
           <button className="header-icon-button signup" onClick={() => { handleSignUpClick(); }}>Sign Up</button>
         }
-        {!isSignedIn &&
-          <button className="header-icon-button" onClick={() => { handleSignInClick(); }}><ListIcon /></button>
+        { !isSignedIn &&
+          <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><ListIcon /></button>
         }
-        {isSignedIn &&
-          <button className="header-icon-button" onClick={() => { openModal(); }}><ListIcon /></button>
+        { isSignedIn &&
+          <button className="header-icon-button" onClick={ () => {openModal();} }><ListIcon /></button>
         }
-
-
       </div>
     </header>
   );

@@ -22,7 +22,7 @@ body {
     text-align: center;
     color: #2A2A2A;
     background-color: #fff;
-    font-family: BlinkMacSystemFont, Segoe WPC, Segoe UI, HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-family: verdana !important;
 }
 
 h1, h2, h3, h4, h5 {
@@ -250,6 +250,7 @@ code {
 
 .logout {
     margin-bottom: 30px;
+    font-family: verdana;
 }
 
 .select-box {
@@ -261,6 +262,8 @@ code {
     background-color: #b4a521 !important;
     margin-left: 20px;
     margin-top: 0px !important;
+    width: auto !important;
+    font-family: verdana;
 }
 
 .impersonated-token {
@@ -271,4 +274,9 @@ button:disabled {
     background-color: #ccc !important;
     color: #666 !important;
     cursor: not-allowed !important;
+}
+
+.username-input {
+    padding: 5px;
+    font-family: verdana;
 }

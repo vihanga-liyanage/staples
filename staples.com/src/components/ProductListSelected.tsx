@@ -1,5 +1,5 @@
 import { FunctionComponent, ReactElement } from 'react';
-import { Avatar, Grid, ListItemAvatar, ListItemText } from '@mui/material';
+import { Avatar, ListItemAvatar, ListItemText } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 
