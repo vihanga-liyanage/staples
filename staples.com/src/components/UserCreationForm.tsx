@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 const IDENTITY_SERVER_URL = 'https://sandbox.play.picdemo.cloud'; // Replace with your actual SCIM API URL
-
 function UserCreationForm() {
   const [username, setUsername] = useState('');
   const [firstname, setFirstName] = useState('');
@@ -28,12 +27,12 @@ function UserCreationForm() {
   const fetchAccessToken = async () => {
     const clientId = 'CHOG3XKWgpr9UeeN4DpVhxXs1BYa'; // Replace with your client ID
     const clientSecret = 'kshIJ3DL0uYQBMScsYpqdCcXbVrzvT1YtaTSQ3ICgJ0a'; // Replace with your client secret
-    const tokenEndpoint = IDENTITY_SERVER_URL+'/oauth2/token'; // Replace with your token endpoint URL
-
+    const tokenEndpoint = IDENTITY_SERVER_URL+"/oauth2/token"; // Replace with your token endpoint URL
+    const credentials = btoa(`${clientId}:${clientSecret}`);
     const response = await fetch(tokenEndpoint, {
       method: 'POST',
       headers: {
-        'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`), // Base64 encoded credentials
+        'Authorization': "Basic " + credentials, // Base64 encoded credentials
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: 'grant_type=client_credentials&scope=internal_user_mgt_create',
@@ -54,7 +53,6 @@ function UserCreationForm() {
       // Fetch access token if not already available
       await fetchAccessToken();
     }
-
     const user = {
       schemas: [],
       name: {
