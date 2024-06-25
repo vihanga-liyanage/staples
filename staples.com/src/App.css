@@ -161,9 +161,11 @@ header .search-bar input {
   background: black;
   color: white;
   border: none;
-  padding: 9px;
   cursor: pointer;
-  border-radius: 22px;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 8px 16px;
 }
 
 .errorBox {

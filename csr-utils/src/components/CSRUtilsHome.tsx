@@ -56,8 +56,8 @@ export const CSRUtilsHome: FunctionComponent<CSRUtilsHomeInterface> = (
           type="text" 
           value={impersonateeUsername}
           onChange={handleInputChange}
-          placeholder="Enter something..."
-          className="text-input"
+          placeholder="Enter username..."
+          className="text-input username-input"
         />
         <button
           className="btn primary impersonate"
