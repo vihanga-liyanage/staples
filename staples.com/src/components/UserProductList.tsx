@@ -5,6 +5,8 @@ import ListItem from '@mui/material/ListItem';
 import { Product } from '../App';
 import { getUserProductIds } from '../Services/scimService';
 
+const envVariables = import.meta.env;
+
 interface UserProductListProps {
   products: Product[];
 }
@@ -16,7 +18,7 @@ const UserProductList: FunctionComponent<UserProductListProps> = ({ products }):
 
   async function populateUserProducts(accessToken: string|null) {
     if (accessToken != null)
-      setUserProductIDs(await getUserProductIds(accessToken));
+      setUserProductIDs(await getUserProductIds(envVariables.VITE_BASE_URL, accessToken));
   }
 
   useEffect(() => {

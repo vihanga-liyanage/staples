@@ -191,7 +191,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         { !isSignedIn &&
           <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><PersonIcon /></button>
         }
-	{!isSignedIn &&
+	      { !isSignedIn &&
           <button className="header-icon-button signup" onClick={() => { handleSignUpClick(); }}>Sign Up</button>
         }
         { !isSignedIn &&
