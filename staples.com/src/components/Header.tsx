@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
 import UserProductList from './UserProductList';
 import { Product } from '../App';
+import UserCreationForm from './UserCreationForm';
 
 interface HeaderProps {
   products: Product[];
@@ -33,6 +34,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const { user, accessToken } = useAuthentication();
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isSignInOverlayVisible, setSignInOverlayVisible] = useState(false);
+  const [isSignUpOverlayVisible, setSignUpOverlayVisible] = useState(false);
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
 
@@ -73,6 +75,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   useEffect(() => {
     if (user) {
       setSignInOverlayVisible(false);
+      setSignUpOverlayVisible(false);
       setIsSignedIn(true);
     }    
     
@@ -91,6 +94,11 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     toggleOverlay();
   }
 
+  const handleSignUpClick = () => {
+    setSignInOverlayVisible(false);
+    toggleSignupOverlay();
+  };
+
   const handleSignOutClick =  () => {
     console.log('Signing out...');
     localStorage.removeItem('impersonateeUsername');
@@ -104,20 +112,26 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     setSignInOverlayVisible(!isSignInOverlayVisible);
   };
 
+  const toggleSignupOverlay = () => {
+    setSignUpOverlayVisible(!isSignUpOverlayVisible);
+  };
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (target.id === 'sign-in-box-container') {
       toggleOverlay();
     }
+    if (target.id === 'sign-up-box-container') {
+      toggleSignupOverlay();
+    }
   };
 
   useEffect(() => {
-    if (isSignInOverlayVisible) {
+    if (isSignInOverlayVisible || isSignUpOverlayVisible) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isSignInOverlayVisible]);
+  }, [isSignInOverlayVisible, isSignUpOverlayVisible]);
 
   return (
     <header>
@@ -129,6 +143,14 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
           />          
         </div>
       }
+
+      { isSignUpOverlayVisible && 
+        <div className="signUpContainer overlay" id='sign-up-box-container'>
+        <div className="signup-box">
+          <h5>Sign Up</h5>
+          <UserCreationForm />
+        </div>
+      </div>}
 
       { modalVisible && (
         <div className="popup-box">
@@ -168,6 +190,9 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       <div className="header-buttons">
         { !isSignedIn &&
           <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><PersonIcon /></button>
+        }
+	{!isSignedIn &&
+          <button className="header-icon-button signup" onClick={() => { handleSignUpClick(); }}>Sign Up</button>
         }
         { !isSignedIn &&
           <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><ListIcon /></button>
