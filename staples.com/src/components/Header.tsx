@@ -10,13 +10,14 @@ import {
   useOn,
   Hooks
 } from "@asgardeo/react";
-import Alert from '@mui/material/Alert';
+import { jwtDecode } from "jwt-decode";
 import Drawer from '@mui/material/Drawer';
 import UserProductList from './UserProductList';
 import { Product } from '../App';
 import UserCreationForm from './UserCreationForm';
-import { Button } from '@mui/material';
+import { Alert, AlertTitle, Button, Typography } from '@mui/material';
 import PasswordRecoveryContainer from './PasswordRecoveryContainer';
+import SignInChildren from './SignInChildren';
 
 interface DecodedToken {
   given_name?: string;
@@ -32,7 +33,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   const envVariables = import.meta.env;
 
-  const { user, accessToken, authResponse } = useAuthentication();  
+  const { user, accessToken, authResponse, setUsername } = useAuthentication();
 
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -41,7 +42,9 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
   const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
+  const [isAuthenticatorsAvailable, setIsAuthenticatorsAvailable] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [idfAuthCount, setIdfAuthCount] = useState<number>(0);
 
   const openModal = (): void => {
     setModalVisible(true);
@@ -85,9 +88,17 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   useEffect(() => {
     if (authResponse) {
-      checkForNonUniqueUsername(authResponse);      
+      checkForNonUniqueUsername(authResponse);   
+      setIsAuthenticatorsAvailable(authResponse?.nextStep?.authenticators?.length > 0);   
     }
   }, [authResponse]);
+
+  useEffect(() => {    
+    if (idfAuthCount === 2) {
+      setUsername("")
+      setShowNonUniqueUsernameError(true);
+    }
+  }, [idfAuthCount, setUsername]);
 
   useEffect(() => {
     if (isSignUpOverlayVisible) {
@@ -134,18 +145,15 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   }
 
   const checkForNonUniqueUsername = (authResponse: any) => {
-    // Check if the next step stepTyype is of AUTHENTICATOR_PROMPT
-    if (authResponse?.nextStep?.stepType === 'AUTHENTICATOR_PROMPT') {
-      // Then check if the authenticator array contains an authenticator
-      // of type "Identifier First"
-      const identifierFirstAuthenticator = authResponse?.nextStep?.authenticators.find(
-        (authenticator: any) => authenticator.authenticator === 'Identifier First');
-      
-      if (identifierFirstAuthenticator) {
-        setShowNonUniqueUsernameError(true);
-      } else {
-        setShowNonUniqueUsernameError(false);
-      }
+    // Check if the authenticator array contains an authenticator
+    // of type "Identifier First"
+    const identifierFirstAuthenticator = authResponse?.nextStep?.authenticators?.find(
+      (authenticator: any) => authenticator.authenticator === 'Identifier First');
+    
+    if (identifierFirstAuthenticator) {
+      setIdfAuthCount((prevCount) => prevCount + 1);
+    } else {
+      setShowNonUniqueUsernameError(false);
     }
   };
 
@@ -222,36 +230,68 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       <Drawer
         anchor='right'
         open={ isDrawerOpen } 
-        onClose={ () => setDrawerOpen(false) }
+        onClose={ () => {
+          setDrawerOpen(false)
+          setIdfAuthCount(0)
+          setShowNonUniqueUsernameError(false)
+          setUsername("")
+        }}
         sx={{
           '& .MuiDrawer-paper': {
             padding: '0px',
           },
         }}
       >
-          <div className="sign-in-box-container">
-            <SignIn
-              showSignUp={true}
-              showFooter={false}
-            />
-            {
-              showNonUniqueUsernameError &&
-              <Alert severity="error" sx={{
-                margin: '20px 40px',
-              }}>
-                Email or username used as login identifier leads to an ambiguity. 
-                Please provide your mobile number as a login identifier.
-              </Alert>
+        { !isAuthenticatorsAvailable && (
+          <Alert severity="error" sx={{ padding: "20px", margin: "50px 10px"}}>
+            <AlertTitle>Error has occured!</AlertTitle>
+            Something went wrong... Authenticators are not available!
+          </Alert>
+        )}
+        <div className="sign-in-box-container">
+          <SignIn
+            showSignUp={false}
+            showFooter={false}
+            identifierFirstChildren={
+              <SignInChildren 
+                setForgotPasswordOpen={setForgotPasswordOpen}
+                showNonUniqueUsernameError={showNonUniqueUsernameError}
+              />
             }
-            <Button 
-              onClick={ () => setForgotPasswordOpen(true) }
-              sx={{
-                margin: '20px 40px',
-              }}
-            >
-              Forgot your password?
-            </Button>
-          </div>
+          />
+          {
+            isAuthenticatorsAvailable && (
+              <div className='sign-in-box-bottom-content'>
+                <Typography variant="body2" sx={{ marginTop: "10px" }}>
+                  By signing in, you agree to Staples Easy Rewards
+                </Typography>
+                <Typography variant="body2">
+                  <a href="#" style={{ color: "black" }}>Terms and Conditions</a>
+                </Typography>
+                <Typography variant="body2" sx={{ marginTop: "20px" }}>
+                  Federal Government Customers <a href="#" style={{ color: "black" }}>click here</a>
+                </Typography>
+                <Typography variant="subtitle1" sx={{ marginTop: "20px", marginBottom: "10px", fontWeight: 600, color: "rgb(77, 77, 79)" }}>
+                  Don't have an account?
+                </Typography>
+                <Button
+                  variant='outlined'
+                  className='create-account-button'
+                >
+                  Create account
+                </Button>
+                <div className='privacy-notice-container'>
+                  <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
+                    <a href="#" style={{ color: "black" }}>Privacy Notice</a>
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
+                    <a href="#" style={{ color: "black" }}>California Notice</a>
+                  </Typography>
+                </div>
+              </div>
+            )
+          }
+        </div>
       </Drawer>
       <Drawer
         anchor='right'

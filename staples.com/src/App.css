@@ -6,10 +6,11 @@
   text-align: center;
 }
 
-/* Apply font-family to all elements and override any other font settings */
+/* Apply font-family to all elements and override any other font settings
+    Use system fonts for better performance and consistency across devices
+*/
 * {
-  font-family: 'Verdana', 'Arial', sans-serif !important;
-  /* Using !important to override other settings */
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -277,7 +278,7 @@ header .search-bar input {
 .OxygenSignIn {
   flex-flow: unset !important;
   width: 100% !important;
-  padding: 0px 50px !important;
+  padding: 0px 30px !important;
   max-width: unset !important;
 }
 
@@ -287,14 +288,15 @@ header .search-bar input {
 
 .Typography-basicAuthTitle {
   background-color: #CC0100;
-  padding: 29px 50px;
+  padding: 28px 50px;
   color: white;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 18px;
   text-align: left;
   margin-left: -50px;
   margin-right: -50px;
 }
+
 .signup-box {
   background-color: white;
   position: fixed;
@@ -415,3 +417,61 @@ header .search-bar input {
   color: green;
   background-color: rgb(216, 250, 216);
 }
+
+.sign-in-children-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.OxygenSignInButton {
+  font-weight: 700;
+  height: auto;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  transition: all 0.1s ease-in 0s;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 12px 0px;
+  border-radius: 40px;
+  padding: 10px 28px;
+  background: rgb(204, 0, 0) !important;
+  border: none;
+  text-align: center;
+  display: flex;
+  width: 256px;
+  margin: 10px auto !important;
+}
+
+.create-account-button {
+  justify-content: center;
+  transition: all 0.1s ease-in 0s;
+  box-shadow: none;
+  border-radius: 30px !important;
+  padding: 9px 27px !important;
+  border: 1px solid rgb(150, 150, 150) !important;
+  display: flex;
+  width: 256px;
+  color: #000 !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+}
+
+.privacy-notice-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 30px;
+  width: 80%;
+}
+
+.sign-in-box-bottom-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  }
