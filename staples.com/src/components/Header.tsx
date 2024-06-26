@@ -14,27 +14,29 @@ import {
 import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
 import ProductListSelected from './ProductListSelected';
+import Alert from '@mui/material/Alert';
+import Drawer from '@mui/material/Drawer';
+
+interface DecodedToken {
+  given_name?: string;
+  family_name?: string;
+  [key: string]: any;
+}
 
 const Header: FunctionComponent = (): ReactElement => {
 
-  interface DecodedToken {
-    given_name?: string;
-    family_name?: string;
-    [key: string]: any;
-  };
-
   const envVariables = import.meta.env;
 
-  const { user } = useAuthentication();
+  const { user, authResponse } = useAuthentication();  
+
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
-  const [isSignInOverlayVisible, setSignInOverlayVisible] = useState(false);
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
-
+  const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const openModal = (): void => {
-
     setModalVisible(true);
   };
 
@@ -42,9 +44,7 @@ const Header: FunctionComponent = (): ReactElement => {
     setModalVisible(false);
   };
 
-
   useEffect(() => {
-    
     const access_token = localStorage.getItem('access_token');
     const impersonateeUserId = localStorage.getItem('impersonateeUserId');
 
@@ -63,11 +63,17 @@ const Header: FunctionComponent = (): ReactElement => {
 
   useEffect(() => {
     if (user) {
-      setSignInOverlayVisible(false);
+      setDrawerOpen(false);
       setIsSignedIn(true);
     }    
     
   }, [user]);
+
+  useEffect(() => {
+    if (authResponse) {
+      checkForNonUniqueUsername(authResponse);      
+    }
+  }, [authResponse]);
 
   useOn({
     event: Hooks.SignOut,
@@ -77,8 +83,17 @@ const Header: FunctionComponent = (): ReactElement => {
     },
   });
 
+  useOn({
+    event: Hooks.SignIn,
+    callback: () => {
+      setIsSignedIn(true);
+      setDrawerOpen(false);
+    },
+  });
+
   const handleSignInClick =  () => {
-    toggleOverlay();
+    setDrawerOpen(true);
+    setShowNonUniqueUsernameError(false);
   }
 
   const handleSignOutClick =  () => {
@@ -89,36 +104,26 @@ const Header: FunctionComponent = (): ReactElement => {
     window.location.href = envVariables.VITE_CSR_APP_PATH;
   }
 
-  const toggleOverlay = () => {
-    setSignInOverlayVisible(!isSignInOverlayVisible);
-  };
-
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as HTMLElement;
-    if (target.id === 'sign-in-box-container') {
-      toggleOverlay();
-    }
-  };
-
-  useEffect(() => {
-    if (isSignInOverlayVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
+  const checkForNonUniqueUsername = (authResponse: any) => {
+    // Check if the next step stepTyype is of AUTHENTICATOR_PROMPT
+    if (authResponse?.nextStep?.stepType === 'AUTHENTICATOR_PROMPT') {
+      // Then check if the authenticator array contains an authenticator
+      // of type "Identifier First"
+      const identifierFirstAuthenticator = authResponse?.nextStep?.authenticators.find(
+        (authenticator: any) => authenticator.authenticator === 'Identifier First');
+      
+      if (identifierFirstAuthenticator) {
+        setShowNonUniqueUsernameError(true);
+      } else {
+        setShowNonUniqueUsernameError(false);
+      }
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      setShowNonUniqueUsernameError(false);
     }
-  }, [isSignInOverlayVisible]);
+  };
 
   return (
     <header>
-      { isSignInOverlayVisible && 
-        <div className="signInContainer overlay" id='sign-in-box-container'>
-          <SignIn 
-            showSignUp={true}
-            showFooter={false}
-          />          
-        </div>
-      }
-
       {modalVisible && (
         <div className="popup-box">
           <button type="button" className="close-button" onClick={closeModal}>
@@ -165,6 +170,32 @@ const Header: FunctionComponent = (): ReactElement => {
           <button className="header-icon-button" onClick={ () => {openModal();} }><ListIcon /></button>
         }
       </div>
+      <Drawer
+        anchor='right'
+        open={ isDrawerOpen } 
+        onClose={ () => setDrawerOpen(false) }
+        sx={{
+          '& .MuiDrawer-paper': {
+            padding: '0px',
+          },
+        }}
+      >
+          <div className="sign-in-box-container">
+            <SignIn
+              showSignUp={true}
+              showFooter={false}
+            />
+            {
+              showNonUniqueUsernameError &&
+              <Alert severity="error" sx={{
+                margin: '20px 40px',
+              }}>
+                Email or username used as login identifier leads to an ambiguity. 
+                Please provide your mobile number as a login identifier.
+              </Alert>
+            }
+          </div>
+      </Drawer>
     </header>
   );
 };

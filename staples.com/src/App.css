@@ -221,3 +221,42 @@ header .search-bar input {
   background-size: 100%;
   background-repeat: no-repeat;
 }
+
+.sign-in-box-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  min-width: 100px;
+  width: 500px !important;
+}
+
+.OxygenSignInPaper {
+  border: none;
+  width: 100% !important;
+  padding: 0px !important;
+  max-width: none !important;
+}
+
+.OxygenSignIn {
+  flex-flow: unset !important;
+  width: 100% !important;
+  padding: 0px 50px !important;
+  max-width: unset !important;
+}
+
+.Box-asgardeoSignIn {
+  min-height: 100px !important;
+}
+
+.Typography-basicAuthTitle {
+  background-color: #CC0100;
+  padding: 29px 50px;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: left;
+  margin-left: -50px;
+  margin-right: -50px;
+}
