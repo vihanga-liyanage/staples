@@ -13,10 +13,9 @@ const Impersonation: FunctionComponent = (): ReactElement => {
   const envVariables = import.meta.env;
 
   // Fetch impersonatee user ID for the username
-  const fetchImpersonateeUser = async (access_token: string, impersonateeUsername: string) => {
+  const fetchImpersonateeUser = async (accessToken: string, impersonateeUsername: string) => {
     try {
-      const response = await getUserIDByUsername(envVariables.VITE_BASE_URL, access_token, impersonateeUsername);
-      console.log(response);
+      const response = await getUserIDByUsername(envVariables.VITE_BASE_URL, accessToken, impersonateeUsername);
       
       if (response.totalResults !== 1) {        
         setError("Couldn't find a user with the username: " + impersonateeUsername);
@@ -70,14 +69,15 @@ const Impersonation: FunctionComponent = (): ReactElement => {
     const code = urlParams.get('code');
     const impersonateeUsernameQueryParam = urlParams.get('impersonateeUsername');
     const impersonateeUsernameFromLocalStorage = localStorage.getItem('impersonateeUsername');
-    const access_token = localStorage.getItem('access_token');
+    const impersonatorAccessToken = localStorage.getItem('impersonatorAccessToken');
 
     if (impersonateeUsernameQueryParam) {
 
       // If impersonateeUsernameQueryParam is present in the URL, save it and trigger auth
       localStorage.setItem('impersonateeUsername', impersonateeUsernameQueryParam);
       localStorage.removeItem('impersonateeUserId');
-      localStorage.removeItem('access_token');
+      localStorage.removeItem('impersonatorAccessToken');
+      localStorage.removeItem('userAccessToken');
       setError(null);    
       window.location.href = generateAuthUrl();
     } else if (code) {
@@ -85,7 +85,7 @@ const Impersonation: FunctionComponent = (): ReactElement => {
       // If auth code is present in the URL, request token
       fetchToken(code)
         .then(data => {          
-          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('impersonatorAccessToken', data.access_token);
           window.location.href = envVariables.VITE_SIGN_IN_REDIRECT_URL;
         })
         .catch(error => {
@@ -98,13 +98,13 @@ const Impersonation: FunctionComponent = (): ReactElement => {
       setIdToken(fragments.id_token);
       setSubjectToken(fragments.subject_token);
       setError(null);
-    } else if (!impersonateeUserId && impersonateeUsernameFromLocalStorage && access_token) {
+    } else if (!impersonateeUserId && impersonateeUsernameFromLocalStorage && impersonatorAccessToken) {
       
-      // If impersonateeUsername and access_token is found in the localstorage, get impersonatee user ID
+      // If impersonateeUsername and impersonatorAccessToken is found in the localstorage, get impersonatee user ID
       if (localStorage.getItem('impersonateeUserId')) {
         setImpersonateeUserId(localStorage.getItem('impersonateeUserId'));
       } else {
-        fetchImpersonateeUser(access_token, impersonateeUsernameFromLocalStorage);
+        fetchImpersonateeUser(impersonatorAccessToken, impersonateeUsernameFromLocalStorage);
       }
     }
     
@@ -129,6 +129,7 @@ const Impersonation: FunctionComponent = (): ReactElement => {
           });
                     
           setImpersonateAccessToken(response.access_token);
+          localStorage.setItem('userAccessToken', response.access_token);
           
         } catch (err) {
           console.log('Failed to exchange token');

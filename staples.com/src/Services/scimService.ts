@@ -3,6 +3,7 @@
 import axios from 'axios';
 
 const SCIM2_USERS_ENDPOINT = "/scim2/Users";
+const SCIM2_ME_ENDPOINT = "/scim2/Me";
 
 // Function to get all users
 export const getAllUsers = async (baseUrl: string, accessToken: string) => {
@@ -34,4 +35,28 @@ export const getUserIDByUsername = async (baseUrl: string, accessToken: string, 
     console.error('Error fetching users', error);
     throw error;
   }
+};
+
+// Get products of a user through SCIM Me
+export const getUserProductIds = async (baseUrl: string, accessToken: string) => {
+
+  const url = `${baseUrl}${SCIM2_ME_ENDPOINT}?attributes=urn:scim:wso2:schema.products`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    const productIdsString = response.data['urn:scim:wso2:schema'].products;    
+    return productIdsString.split(',').map(Number);
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.log(err.response?.data?.error_description || err.message);
+    } else {
+      console.log('An unexpected error occurred');
+    }
+  }
+  return [];
 };
