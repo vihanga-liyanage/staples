@@ -13,7 +13,6 @@ import {
 } from "@asgardeo/react";
 import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
-import Alert from '@mui/material/Alert';
 import Drawer from '@mui/material/Drawer';
 
 interface DecodedToken {
@@ -24,7 +23,8 @@ interface DecodedToken {
 import UserProductList from './UserProductList';
 import { Product } from '../App';
 import UserCreationForm from './UserCreationForm';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import SignInChildren from './SignInChildren';
 
 interface HeaderProps {
   products: Product[];
@@ -34,7 +34,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   const envVariables = import.meta.env;
 
-  const { user, accessToken, authResponse } = useAuthentication();  
+  const { user, accessToken, authResponse, setUsername } = useAuthentication();
 
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -93,10 +93,11 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   }, [authResponse]);
 
   useEffect(() => {    
-    if (idfAuthCount > 1) {
+    if (idfAuthCount === 2) {
+      setUsername("")
       setShowNonUniqueUsernameError(true);
     }
-  }, [idfAuthCount]);
+  }, [idfAuthCount, setUsername]);
 
   useEffect(() => {
     if (isSignUpOverlayVisible) {
@@ -228,7 +229,12 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       <Drawer
         anchor='right'
         open={ isDrawerOpen } 
-        onClose={ () => setDrawerOpen(false) }
+        onClose={ () => {
+          setDrawerOpen(false)
+          setIdfAuthCount(0)
+          setShowNonUniqueUsernameError(false)
+          setUsername("")
+        }}
         sx={{
           '& .MuiDrawer-paper': {
             padding: '0px',
@@ -237,26 +243,41 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       >
           <div className="sign-in-box-container">
             <SignIn
-              showSignUp={true}
+              showSignUp={false}
               showFooter={false}
+              identifierFirstChildren={
+                <SignInChildren 
+                  setForgotPasswordOpen={setForgotPasswordOpen}
+                  showNonUniqueUsernameError={showNonUniqueUsernameError}
+                />
+              }
             />
-            {
-              showNonUniqueUsernameError &&
-              <Alert severity="error" sx={{
-                margin: '20px 40px',
-              }}>
-                Email or username used as login identifier leads to an ambiguity. 
-                Please provide your mobile number as a login identifier.
-              </Alert>
-            }
-            <Button 
-              onClick={ () => setForgotPasswordOpen(true) }
-              sx={{
-                margin: '20px 40px',
-              }}
+            <Typography variant="body2" sx={{ marginTop: "10px" }}>
+              By signing in, you agree to Staples Easy Rewards
+            </Typography>
+            <Typography variant="body2">
+              <a href="#" style={{ color: "black" }}>Terms and Conditions</a>
+            </Typography>
+            <Typography variant="body2" sx={{ marginTop: "20px" }}>
+              Federal Government Customers <a href="#" style={{ color: "black" }}>click here</a>
+            </Typography>
+            <Typography variant="subtitle1" sx={{ marginTop: "20px", marginBottom: "10px", fontWeight: 600, color: "rgb(77, 77, 79)" }}>
+              Don't have an account?
+            </Typography>
+            <Button
+              variant='outlined'
+              className='create-account-button'
             >
-              Forgot your password?
+              Create account
             </Button>
+            <div className='privacy-notice-container'>
+              <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
+                <a href="#" style={{ color: "black" }}>Privacy Notice</a>
+              </Typography>
+              <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
+                <a href="#" style={{ color: "black" }}>California Notice</a>
+              </Typography>
+            </div>
           </div>
       </Drawer>
       <Drawer
