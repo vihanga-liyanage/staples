@@ -44,6 +44,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
   const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [idfAuthCount, setIdfAuthCount] = useState<number>(0);
 
   const openModal = (): void => {
     setModalVisible(true);
@@ -91,6 +92,12 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     }
   }, [authResponse]);
 
+  useEffect(() => {    
+    if (idfAuthCount > 1) {
+      setShowNonUniqueUsernameError(true);
+    }
+  }, [idfAuthCount]);
+
   useEffect(() => {
     if (isSignUpOverlayVisible) {
       document.addEventListener('mousedown', handleClickOutside);
@@ -136,18 +143,15 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   }
 
   const checkForNonUniqueUsername = (authResponse: any) => {
-    // Check if the next step stepTyype is of AUTHENTICATOR_PROMPT
-    if (authResponse?.nextStep?.stepType === 'AUTHENTICATOR_PROMPT') {
-      // Then check if the authenticator array contains an authenticator
-      // of type "Identifier First"
-      const identifierFirstAuthenticator = authResponse?.nextStep?.authenticators.find(
-        (authenticator: any) => authenticator.authenticator === 'Identifier First');
-      
-      if (identifierFirstAuthenticator) {
-        setShowNonUniqueUsernameError(true);
-      } else {
-        setShowNonUniqueUsernameError(false);
-      }
+    // Check if the authenticator array contains an authenticator
+    // of type "Identifier First"
+    const identifierFirstAuthenticator = authResponse?.nextStep?.authenticators?.find(
+      (authenticator: any) => authenticator.authenticator === 'Identifier First');
+    
+    if (identifierFirstAuthenticator) {
+      setIdfAuthCount((prevCount) => prevCount + 1);
+    } else {
+      setShowNonUniqueUsernameError(false);
     }
   };
 
