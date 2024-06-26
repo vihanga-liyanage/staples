@@ -202,13 +202,13 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
         {step === 1 && (
           <div>
             <Typography variant="h4" color="textSecondary" gutterBottom>
-              Forget Password
+              Forgot Password ?
             </Typography>
             <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
               This happens. Please provide your email or username to proceed with resetting your password.
             </Typography>
             <TextField
-              label="Username"
+              label="Username or Email"
               placeholder="Type your username or email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
