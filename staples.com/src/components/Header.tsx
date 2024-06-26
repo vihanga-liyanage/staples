@@ -168,6 +168,13 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     }
   };
 
+  const handleSignInReset = () => {
+    setDrawerOpen(false);
+    setIdfAuthCount(0);
+    setShowNonUniqueUsernameError(false);
+    setUsername("");
+  };
+
   return (
     <header>
       { isSignUpOverlayVisible && 
@@ -176,8 +183,8 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
           <h5>Sign Up</h5>
           <UserCreationForm />
         </div>
-      </div>}
-
+      </div>
+      }
       { modalVisible && (
         <div className="popup-box">
           <button type="button" className="close-button" onClick={closeModal}>
@@ -188,6 +195,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
         </div>
       )}
+
       { modalVisible && <div className="popup-box-overlay" onClick={closeModal} /> }
 
       <div className="logo">
@@ -197,6 +205,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         <SearchIcon />
         <input type="text" placeholder="Search..." />
       </div>
+
       { isSignedIn && !impersonatorUserName &&
         <>
           <h5 style={{padding: '0px 10px 0px 10px'}}>
@@ -216,9 +225,6 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       <div className="header-buttons">
         { !isSignedIn &&
           <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><PersonIcon /></button>
-        }
-        { !isSignedIn &&
-          <button className="header-icon-button signup" onClick={() => { handleSignUpClick(); }}>Sign Up</button>
         }
         { !isSignedIn &&
           <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><ListIcon /></button>
@@ -243,10 +249,19 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         }}
       >
         { !isAuthenticatorsAvailable && (
-          <Alert severity="error" sx={{ padding: "20px", margin: "50px 10px"}}>
-            <AlertTitle>Error has occured!</AlertTitle>
-            Something went wrong... Authenticators are not available!
-          </Alert>
+          <div className="sign-in-box-bottom-content">
+            <Alert severity="error" sx={{ padding: "20px", margin: "50px 10px"}}>
+              <AlertTitle>Error has occured!</AlertTitle>
+              Something went wrong... Authenticators are not available!
+            </Alert>
+            <Button
+              variant='outlined'
+              className='create-account-button'
+              onClick={() => { handleSignInReset(); }}
+            >
+              Try again
+            </Button>
+          </div>
         )}
         <div className="sign-in-box-container">
           <SignIn
@@ -277,6 +292,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
                 <Button
                   variant='outlined'
                   className='create-account-button'
+                  onClick={() => { handleSignUpClick(); }}
                 >
                   Create account
                 </Button>
