@@ -89,6 +89,14 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     }
   }, [authResponse]);
 
+  useEffect(() => {
+    if (isSignUpOverlayVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isSignUpOverlayVisible]);
+
   useOn({
     event: Hooks.SignOut,
     callback: () => {
@@ -144,20 +152,13 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const toggleSignupOverlay = () => {
     setSignUpOverlayVisible(!isSignUpOverlayVisible);
   };
+
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (target.id === 'sign-up-box-container') {
       toggleSignupOverlay();
     }
   };
-
-  useEffect(() => {
-    if (isSignUpOverlayVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      setShowNonUniqueUsernameError(false);
-    }
-  }, [isSignUpOverlayVisible]);
 
   return (
     <header>
