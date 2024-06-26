@@ -5,35 +5,31 @@ import { getToken } from './../Services/tokenservice';
 import staplesBackground from '../assets/images/staples-background.png'; // Add a suitable background image
 
 interface PasswordRecoveryContainerProps {
-  baseUrl: string;
-  tokenUrl: string;
-  clientId: string;
-  clientSecret: string;
   onClose: () => void;
 }
 
+const envVariables = import.meta.env;
+
 const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ onClose }) => {
   const [username, setUsername] = useState('');
-  const [recoveryCode, setRecoveryCode] = useState('');
+  // const [recoveryCode, setRecoveryCode] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [otp, setOtp] = useState('');
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [step, setStep] = useState(1);
-  const [flowConfirmationCode, setFlowConfirmationCode] = useState('');
+  // const [flowConfirmationCode, setFlowConfirmationCode] = useState('');
   const [channelId, setChannelId] = useState('2'); // Assuming default channelId for mobile
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mobileNumber, setMobileNumber] = useState('');
-  const baseUrl = "https://sandbox.play.picdemo.cloud/";
-  const tokenEndpoint = "https://sandbox.play.picdemo.cloud/oauth2/token";
-  const backEndClientSecret = "xeg4fdDVPQMdrmqJvZO1KffiMNYwjXj6eXlL7g9ymr4a";
-  const backEndClientID = "R2UeUiX3c29moVEeLJN8DcMSmLsa";
+
+  const tokenEndpoint = `${envVariables.VITE_BASE_URL}/oauth2/token`;
 
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const token = await getToken(tokenEndpoint, backEndClientID, backEndClientSecret, "openid internal_user_recovery_create");
+        const token = await getToken(tokenEndpoint, envVariables.VITE_CLIENT_ID, envVariables.VITE_CLIENT_SECRET, "openid internal_user_recovery_create");
         setAccessToken(token);
         console.log('Access token fetched successfully:', token);
       } catch (error) {
@@ -43,14 +39,14 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       }
     };
     fetchToken();
-  }, [tokenEndpoint, backEndClientID, backEndClientSecret]);
+  }, [tokenEndpoint, envVariables.VITE_CLIENT_ID, envVariables.VITE_CLIENT_SECRET]);
 
   const handleForgetPassword = async () => {
     if (!accessToken) return;
 
     try {
       console.log('Starting password recovery initiation');
-      const response = await initPasswordRecovery(baseUrl, accessToken, username);
+      const response = await initPasswordRecovery(envVariables.VITE_BASE_URL, accessToken, username);
       console.log('Response from initPasswordRecovery:', response);
 
       if (response.status === 202) {
@@ -60,8 +56,8 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       } else if (response.status === 200) {
         console.log("Account found, proceeding with recovery");
         const data = response.data;
-        setFlowConfirmationCode(data[0].flowConfirmationCode);
-        setRecoveryCode(data[0].channelInfo.recoveryCode);
+        // setFlowConfirmationCode(data[0].flowConfirmationCode);
+        // setRecoveryCode(data[0].channelInfo.recoveryCode);
         handleRecover(data[0].channelInfo.recoveryCode); // Trigger the recovery method directly after finding the account
       }
     } catch (error: any) {
@@ -78,14 +74,14 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
 
     try {
       console.log('Starting password recovery with mobile number');
-      const response = await initPasswordRecoveryWithMobile(baseUrl, accessToken, mobileNumber);
+      const response = await initPasswordRecoveryWithMobile(envVariables.VITE_BASE_URL, accessToken, mobileNumber);
       console.log('Response from initPasswordRecoveryWithMobile:', response);
 
       if (response.status === 200) {
         setErrorMessage(null);
         const data = response.data;
-        setFlowConfirmationCode(data[0].flowConfirmationCode);
-        setRecoveryCode(data[0].channelInfo.recoveryCode);
+        // setFlowConfirmationCode(data[0].flowConfirmationCode);
+        // setRecoveryCode(data[0].channelInfo.recoveryCode);
         handleRecover(data[0].channelInfo.recoveryCode); // Trigger the recovery method directly after providing the mobile number
       }
     } catch (error: any) {
@@ -102,7 +98,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
 
     try {
       console.log('Starting password recovery confirmation');
-      const data = await recoverPassword(baseUrl, accessToken, recoveryCodeUpdated, channelId);
+      const data = await recoverPassword(envVariables.VITE_BASE_URL, accessToken, recoveryCodeUpdated, channelId);
       console.log('Response from recoverPassword:', data);
 
       if (data.flowConfirmationCode) {
@@ -123,7 +119,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
 
     try {
       console.log('Starting password recovery confirmation with OTP');
-      const data = await confirmPasswordRecovery(baseUrl, accessToken, confirmationCode, otp);
+      const data = await confirmPasswordRecovery(envVariables.VITE_BASE_URL, accessToken, confirmationCode, otp);
       console.log('Response from confirmPasswordRecovery:', data);
 
       if (data.resetCode) {
@@ -144,7 +140,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
 
     try {
       console.log('Starting password reset');
-      const response = await resetPassword(baseUrl, accessToken, resetCode, confirmationCode, newPassword);
+      const response = await resetPassword(envVariables.VITE_BASE_URL, accessToken, resetCode, confirmationCode, newPassword);
 
       if (response.status === 200) {
         setStep(4); // Move to step 4 to show success message
@@ -167,12 +163,12 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
   const handleRestart = () => {
     setStep(1);
     setUsername('');
-    setRecoveryCode('');
+    // setRecoveryCode('');
     setConfirmationCode('');
     setOtp('');
     setResetCode('');
     setNewPassword('');
-    setFlowConfirmationCode('');
+    // setFlowConfirmationCode('');
     setChannelId('2');
     setErrorMessage(null);
     setMobileNumber('');

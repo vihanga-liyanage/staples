@@ -304,8 +304,6 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         }}
       >
         <PasswordRecoveryContainer
-          baseUrl={envVariables.VITE_API_BASE_URL}
-          accessToken={accessToken}
           onClose={() => setForgotPasswordOpen(false)}
         />
       </Drawer>
