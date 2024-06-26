@@ -1,5 +1,4 @@
-
-import { FunctionComponent, ReactElement, useEffect } from 'react';
+import { FunctionComponent, ReactElement, useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/Person';
 import ListIcon from '@mui/icons-material/List';
@@ -11,20 +10,19 @@ import {
   useOn,
   Hooks
 } from "@asgardeo/react";
-import { useState } from 'react';
-import { jwtDecode } from "jwt-decode";
 import Alert from '@mui/material/Alert';
 import Drawer from '@mui/material/Drawer';
+import UserProductList from './UserProductList';
+import { Product } from '../App';
+import UserCreationForm from './UserCreationForm';
+import { Button } from '@mui/material';
+import PasswordRecoveryContainer from './PasswordRecoveryContainer';
 
 interface DecodedToken {
   given_name?: string;
   family_name?: string;
   [key: string]: any;
 }
-import UserProductList from './UserProductList';
-import { Product } from '../App';
-import UserCreationForm from './UserCreationForm';
-import { Button } from '@mui/material';
 
 interface HeaderProps {
   products: Product[];
@@ -265,7 +263,11 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
           },
         }}
       >
-         <h1>Forgot password</h1>
+        <PasswordRecoveryContainer
+          baseUrl={envVariables.VITE_API_BASE_URL}
+          accessToken={accessToken}
+          onClose={() => setForgotPasswordOpen(false)}
+        />
       </Drawer>
     </header>
   );
