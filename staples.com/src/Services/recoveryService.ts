@@ -28,7 +28,7 @@ export const initPasswordRecovery = async (baseUrl: string, accessToken: string,
         'Content-Type': 'application/json'
       }
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error initializing password recovery', error);
     throw error;
@@ -57,7 +57,7 @@ export const initPasswordRecoveryWithMobile = async (baseUrl: string, accessToke
         'Content-Type': 'application/json'
       }
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error initializing password recovery', error);
     throw error;
@@ -115,7 +115,7 @@ export const resetPassword = async (baseUrl: string, accessToken: string, resetC
         'Content-Type': 'application/json'
       }
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error resetting password', error);
     throw error;
