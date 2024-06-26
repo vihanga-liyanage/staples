@@ -191,7 +191,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       { isSignedIn && !impersonatorUserName &&
         <>
           <h5 style={{padding: '0px 10px 0px 10px'}}>
-            Welcome, {user.name.givenName} {user.name.familyName}
+            Welcome, {user?.name?.givenName} {user?.name?.familyName}
           </h5>
           <SignOutButton />
         </>
