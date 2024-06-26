@@ -24,6 +24,7 @@ interface DecodedToken {
 import UserProductList from './UserProductList';
 import { Product } from '../App';
 import UserCreationForm from './UserCreationForm';
+import { Button } from '@mui/material';
 
 interface HeaderProps {
   products: Product[];
@@ -37,6 +38,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isForgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [isSignUpOverlayVisible, setSignUpOverlayVisible] = useState(false);
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
@@ -243,7 +245,27 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
                 Please provide your mobile number as a login identifier.
               </Alert>
             }
+            <Button 
+              onClick={ () => setForgotPasswordOpen(true) }
+              sx={{
+                margin: '20px 40px',
+              }}
+            >
+              Forgot your password?
+            </Button>
           </div>
+      </Drawer>
+      <Drawer
+        anchor='right'
+        open={ isForgotPasswordOpen } 
+        onClose={ () => setForgotPasswordOpen(false) }
+        sx={{
+          '& .MuiDrawer-paper': {
+            padding: '0px',
+          },
+        }}
+      >
+         <h1>Forgot password</h1>
       </Drawer>
     </header>
   );
