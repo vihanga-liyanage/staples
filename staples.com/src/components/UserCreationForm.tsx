@@ -1,6 +1,8 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 
-const IDENTITY_SERVER_URL = 'https://sandbox.play.picdemo.cloud'; // Replace with your actual SCIM API URL
+const envVariables = import.meta.env;
+const IDENTITY_SERVER_URL = envVariables.VITE_BASE_URL; // Replace with your actual SCIM API URL
 function UserCreationForm() {
   const [username, setUsername] = useState('');
   const [firstname, setFirstName] = useState('');
@@ -25,35 +27,38 @@ function UserCreationForm() {
   };
 
   const fetchAccessToken = async () => {
-    const clientId = 'CHOG3XKWgpr9UeeN4DpVhxXs1BYa'; // Replace with your client ID
-    const clientSecret = 'kshIJ3DL0uYQBMScsYpqdCcXbVrzvT1YtaTSQ3ICgJ0a'; // Replace with your client secret
-    const tokenEndpoint = IDENTITY_SERVER_URL+"/oauth2/token"; // Replace with your token endpoint URL
-    const credentials = btoa(`${clientId}:${clientSecret}`);
-    const response = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': "Basic " + credentials, // Base64 encoded credentials
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: 'grant_type=client_credentials&scope=internal_user_mgt_create',
-    });
+    const clientId = envVariables.VITE_CLIENT_ID; // Replace with your client ID
+    const clientSecret = envVariables.VITE_CLIENT_SECRET; // Replace with your client secret
+    const tokenEndpoint = IDENTITY_SERVER_URL + "/oauth2/token"; // Replace with your token endpoint URL
 
-    if (response.ok) {
-      const tokenData = await response.json();
-      setAccessToken(tokenData.access_token); // Store access token in state
-    } else {
-      console.error('Error fetching access token:', await response.text());
+    const credentials = btoa(`${clientId}:${clientSecret}`);
+
+    const params = new URLSearchParams();
+    params.append('grant_type', 'client_credentials');
+    params.append('scope', 'internal_user_mgt_create');
+    try {
+      const response = await axios.post(tokenEndpoint, params, {
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          ContentType: 'application/x-www-form-urlencoded',
+        },
+      });
+
+      setAccessToken(response.data.access_token); // Store access token in state
+    } catch (error) {
+      console.error('Error fetching access token:', error);
       setError(true);
     }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (!accessToken) {
       // Fetch access token if not already available
       await fetchAccessToken();
     }
+
     const user = {
       schemas: [],
       name: {
@@ -76,21 +81,20 @@ function UserCreationForm() {
     };
 
     try {
-      const response = await fetch(IDENTITY_SERVER_URL+"/scim2/Users", {
-        method: 'POST',
+      const response = await axios.post(`${IDENTITY_SERVER_URL}/scim2/Users`, user, {
         headers: {
           'Content-Type': 'application/scim+json',
-          Authorization: `Bearer ${accessToken}`, // Replace with your SCIM API access token
+          Authorization: `Bearer ${accessToken}`,
+          'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify(user),
       });
 
-      if (response.ok) {
+      if (response.status === 201) { // Success status code for user creation in SCIM is 201
         console.log('User created successfully!');
         resetForm();
         setSuccess(true);
       } else {
-        const errorData = await response.json();
+        const errorData = response.data;
         const errorDetail = errorData?.detail || 'Unknown error creating user'; // Handle missing detail
         setErrorMessage(errorDetail);
         console.error('Error creating user:', errorDetail);
@@ -98,7 +102,8 @@ function UserCreationForm() {
         setError(true);
       }
     } catch (error) {
-      console.error('Error creating user:', error);
+      setErrorMessage((error as any).response?.data?.detail || 'Unknown error creating user');
+      console.error('Error creating user:', (error as any).response?.data?.detail || error);
       setSuccess(false);
       setError(true);
     }
