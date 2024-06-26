@@ -15,8 +15,9 @@ import Drawer from '@mui/material/Drawer';
 import UserProductList from './UserProductList';
 import { Product } from '../App';
 import UserCreationForm from './UserCreationForm';
-import { Button, Typography } from '@mui/material';
+import { Alert, AlertTitle, Button, Typography } from '@mui/material';
 import PasswordRecoveryContainer from './PasswordRecoveryContainer';
+import SignInChildren from './SignInChildren';
 
 interface DecodedToken {
   given_name?: string;
@@ -41,6 +42,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
   const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
+  const [isAuthenticatorsAvailable, setIsAuthenticatorsAvailable] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [idfAuthCount, setIdfAuthCount] = useState<number>(0);
 
@@ -86,7 +88,8 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   useEffect(() => {
     if (authResponse) {
-      checkForNonUniqueUsername(authResponse);      
+      checkForNonUniqueUsername(authResponse);   
+      setIsAuthenticatorsAvailable(authResponse?.nextStep?.authenticators?.length > 0);   
     }
   }, [authResponse]);
 
@@ -239,44 +242,56 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
           },
         }}
       >
-          <div className="sign-in-box-container">
-            <SignIn
-              showSignUp={false}
-              showFooter={false}
-              identifierFirstChildren={
-                <SignInChildren 
-                  setForgotPasswordOpen={setForgotPasswordOpen}
-                  showNonUniqueUsernameError={showNonUniqueUsernameError}
-                />
-              }
-            />
-            <Typography variant="body2" sx={{ marginTop: "10px" }}>
-              By signing in, you agree to Staples Easy Rewards
-            </Typography>
-            <Typography variant="body2">
-              <a href="#" style={{ color: "black" }}>Terms and Conditions</a>
-            </Typography>
-            <Typography variant="body2" sx={{ marginTop: "20px" }}>
-              Federal Government Customers <a href="#" style={{ color: "black" }}>click here</a>
-            </Typography>
-            <Typography variant="subtitle1" sx={{ marginTop: "20px", marginBottom: "10px", fontWeight: 600, color: "rgb(77, 77, 79)" }}>
-              Don't have an account?
-            </Typography>
-            <Button
-              variant='outlined'
-              className='create-account-button'
-            >
-              Create account
-            </Button>
-            <div className='privacy-notice-container'>
-              <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
-                <a href="#" style={{ color: "black" }}>Privacy Notice</a>
-              </Typography>
-              <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
-                <a href="#" style={{ color: "black" }}>California Notice</a>
-              </Typography>
-            </div>
-          </div>
+        { !isAuthenticatorsAvailable && (
+          <Alert severity="error" sx={{ padding: "20px", margin: "50px 10px"}}>
+            <AlertTitle>Error has occured!</AlertTitle>
+            Something went wrong... Authenticators are not available!
+          </Alert>
+        )}
+        <div className="sign-in-box-container">
+          <SignIn
+            showSignUp={false}
+            showFooter={false}
+            identifierFirstChildren={
+              <SignInChildren 
+                setForgotPasswordOpen={setForgotPasswordOpen}
+                showNonUniqueUsernameError={showNonUniqueUsernameError}
+              />
+            }
+          />
+          {
+            isAuthenticatorsAvailable && (
+              <div className='sign-in-box-bottom-content'>
+                <Typography variant="body2" sx={{ marginTop: "10px" }}>
+                  By signing in, you agree to Staples Easy Rewards
+                </Typography>
+                <Typography variant="body2">
+                  <a href="#" style={{ color: "black" }}>Terms and Conditions</a>
+                </Typography>
+                <Typography variant="body2" sx={{ marginTop: "20px" }}>
+                  Federal Government Customers <a href="#" style={{ color: "black" }}>click here</a>
+                </Typography>
+                <Typography variant="subtitle1" sx={{ marginTop: "20px", marginBottom: "10px", fontWeight: 600, color: "rgb(77, 77, 79)" }}>
+                  Don't have an account?
+                </Typography>
+                <Button
+                  variant='outlined'
+                  className='create-account-button'
+                >
+                  Create account
+                </Button>
+                <div className='privacy-notice-container'>
+                  <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
+                    <a href="#" style={{ color: "black" }}>Privacy Notice</a>
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: "rgb(77, 77, 79)" }}>
+                    <a href="#" style={{ color: "black" }}>California Notice</a>
+                  </Typography>
+                </div>
+              </div>
+            )
+          }
+        </div>
       </Drawer>
       <Drawer
         anchor='right'

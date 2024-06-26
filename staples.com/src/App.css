@@ -465,3 +465,9 @@ header .search-bar input {
   margin-top: 30px;
   width: 80%;
 }
+
+.sign-in-box-bottom-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  }
