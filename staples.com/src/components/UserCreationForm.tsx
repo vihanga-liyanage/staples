@@ -30,12 +30,13 @@ function UserCreationForm() {
     const clientId = envVariables.VITE_CLIENT_ID; // Replace with your client ID
     const clientSecret = envVariables.VITE_CLIENT_SECRET; // Replace with your client secret
     const tokenEndpoint = IDENTITY_SERVER_URL + "/oauth2/token"; // Replace with your token endpoint URL
-
+  
     const credentials = btoa(`${clientId}:${clientSecret}`);
-
+  
     const params = new URLSearchParams();
     params.append('grant_type', 'client_credentials');
     params.append('scope', 'internal_user_mgt_create');
+  
     try {
       const response = await axios.post(tokenEndpoint, params, {
         headers: {
@@ -43,22 +44,22 @@ function UserCreationForm() {
           ContentType: 'application/x-www-form-urlencoded',
         },
       });
-
-      setAccessToken(response.data.access_token); // Store access token in state
+  
+      return response.data.access_token; // Return the access token
     } catch (error) {
       console.error('Error fetching access token:', error);
-      setError(true);
+      throw error; // Re-throw the error for handling in handleSubmit
     }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (!accessToken) {
-      // Fetch access token if not already available
-      await fetchAccessToken();
+    var localAccessToken = accessToken;
+    if (!localAccessToken) {
+      const fetchedToken = await fetchAccessToken();
+      setAccessToken(fetchedToken); // Update state with fetched token
+      localAccessToken = fetchedToken; // Update variable for use in the request
     }
-
     const user = {
       schemas: [],
       name: {
@@ -84,7 +85,7 @@ function UserCreationForm() {
       const response = await axios.post(`${IDENTITY_SERVER_URL}/scim2/Users`, user, {
         headers: {
           'Content-Type': 'application/scim+json',
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${localAccessToken}`,
           'Access-Control-Allow-Origin': '*',
         },
       });
