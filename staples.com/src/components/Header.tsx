@@ -13,9 +13,18 @@ import {
 } from "@asgardeo/react";
 import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
+import Alert from '@mui/material/Alert';
+import Drawer from '@mui/material/Drawer';
+
+interface DecodedToken {
+  given_name?: string;
+  family_name?: string;
+  [key: string]: any;
+}
 import UserProductList from './UserProductList';
 import { Product } from '../App';
 import UserCreationForm from './UserCreationForm';
+import { Button } from '@mui/material';
 
 interface HeaderProps {
   products: Product[];
@@ -23,25 +32,20 @@ interface HeaderProps {
 
 const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
-  interface DecodedToken {
-    given_name?: string;
-    family_name?: string;
-    [key: string]: any;
-  };
-
   const envVariables = import.meta.env;
 
-  const { user, accessToken } = useAuthentication();
+  const { user, accessToken, authResponse } = useAuthentication();  
+
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
-  const [isSignInOverlayVisible, setSignInOverlayVisible] = useState(false);
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isForgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [isSignUpOverlayVisible, setSignUpOverlayVisible] = useState(false);
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
-
+  const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const openModal = (): void => {
-
     setModalVisible(true);
   };
 
@@ -74,12 +78,26 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   useEffect(() => {
     if (user) {
-      setSignInOverlayVisible(false);
+      setDrawerOpen(false);
       setSignUpOverlayVisible(false);
       setIsSignedIn(true);
     }    
     
   }, [user]);
+
+  useEffect(() => {
+    if (authResponse) {
+      checkForNonUniqueUsername(authResponse);      
+    }
+  }, [authResponse]);
+
+  useEffect(() => {
+    if (isSignUpOverlayVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isSignUpOverlayVisible]);
 
   useOn({
     event: Hooks.SignOut,
@@ -90,12 +108,21 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     },
   });
 
+  useOn({
+    event: Hooks.SignIn,
+    callback: () => {
+      setIsSignedIn(true);
+      setDrawerOpen(false);
+    },
+  });
+
   const handleSignInClick =  () => {
-    toggleOverlay();
+    setDrawerOpen(true);
+    setShowNonUniqueUsernameError(false);
   }
 
   const handleSignUpClick = () => {
-    setSignInOverlayVisible(false);
+    setDrawerOpen(false);
     toggleSignupOverlay();
   };
 
@@ -108,42 +135,35 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     window.location.href = envVariables.VITE_CSR_APP_PATH;
   }
 
-  const toggleOverlay = () => {
-    setSignInOverlayVisible(!isSignInOverlayVisible);
+  const checkForNonUniqueUsername = (authResponse: any) => {
+    // Check if the next step stepTyype is of AUTHENTICATOR_PROMPT
+    if (authResponse?.nextStep?.stepType === 'AUTHENTICATOR_PROMPT') {
+      // Then check if the authenticator array contains an authenticator
+      // of type "Identifier First"
+      const identifierFirstAuthenticator = authResponse?.nextStep?.authenticators.find(
+        (authenticator: any) => authenticator.authenticator === 'Identifier First');
+      
+      if (identifierFirstAuthenticator) {
+        setShowNonUniqueUsernameError(true);
+      } else {
+        setShowNonUniqueUsernameError(false);
+      }
+    }
   };
 
   const toggleSignupOverlay = () => {
     setSignUpOverlayVisible(!isSignUpOverlayVisible);
   };
+
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (target.id === 'sign-in-box-container') {
-      toggleOverlay();
-    }
     if (target.id === 'sign-up-box-container') {
       toggleSignupOverlay();
     }
   };
 
-  useEffect(() => {
-    if (isSignInOverlayVisible || isSignUpOverlayVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isSignInOverlayVisible, isSignUpOverlayVisible]);
-
   return (
     <header>
-      { isSignInOverlayVisible && 
-        <div className="signInContainer overlay" id='sign-in-box-container'>
-          <SignIn 
-            showSignUp={true}
-            showFooter={false}
-          />          
-        </div>
-      }
-
       { isSignUpOverlayVisible && 
         <div className="signUpContainer overlay" id='sign-up-box-container'>
         <div className="signup-box">
@@ -174,7 +194,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       { isSignedIn && !impersonatorUserName &&
         <>
           <h5 style={{padding: '0px 10px 0px 10px'}}>
-            Welcome, {user.name.givenName} {user.name.familyName}
+            Welcome, {user?.name?.givenName} {user?.name?.familyName}
           </h5>
           <SignOutButton />
         </>
@@ -191,7 +211,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         { !isSignedIn &&
           <button className="header-icon-button" onClick={ () => {handleSignInClick();} }><PersonIcon /></button>
         }
-	      { !isSignedIn &&
+        { !isSignedIn &&
           <button className="header-icon-button signup" onClick={() => { handleSignUpClick(); }}>Sign Up</button>
         }
         { !isSignedIn &&
@@ -201,6 +221,52 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
           <button className="header-icon-button" onClick={ () => {openModal();} }><ListIcon /></button>
         }
       </div>
+      <Drawer
+        anchor='right'
+        open={ isDrawerOpen } 
+        onClose={ () => setDrawerOpen(false) }
+        sx={{
+          '& .MuiDrawer-paper': {
+            padding: '0px',
+          },
+        }}
+      >
+          <div className="sign-in-box-container">
+            <SignIn
+              showSignUp={true}
+              showFooter={false}
+            />
+            {
+              showNonUniqueUsernameError &&
+              <Alert severity="error" sx={{
+                margin: '20px 40px',
+              }}>
+                Email or username used as login identifier leads to an ambiguity. 
+                Please provide your mobile number as a login identifier.
+              </Alert>
+            }
+            <Button 
+              onClick={ () => setForgotPasswordOpen(true) }
+              sx={{
+                margin: '20px 40px',
+              }}
+            >
+              Forgot your password?
+            </Button>
+          </div>
+      </Drawer>
+      <Drawer
+        anchor='right'
+        open={ isForgotPasswordOpen } 
+        onClose={ () => setForgotPasswordOpen(false) }
+        sx={{
+          '& .MuiDrawer-paper': {
+            padding: '0px',
+          },
+        }}
+      >
+         <h1>Forgot password</h1>
+      </Drawer>
     </header>
   );
 };
