@@ -300,8 +300,9 @@ header .search-bar input {
 .signup-box {
   background-color: white;
   position: fixed;
-  transform: translate(52%, 0%);
-  z-index: 1000;
+  right: 0;
+  transform: translate(0%, 0%);
+  z-index: 1200;
   min-height: 100%;
   height: fit-content;
   display: flex;
@@ -309,7 +310,7 @@ header .search-bar input {
   justify-content: flex-start;
   align-items: center;
   overflow: auto;
-  min-width: 49%;
+  width: 486px;
   color: rgba(0, 0, 0, 0.87);
   font-family: 'Verdana', 'Arial', sans-serif !important;
   border-radius: 0 4px 4px 0;
@@ -326,16 +327,14 @@ header .search-bar input {
 }
 
 .signup-box h5 {
-  background-color: #cc0100;
-  padding: 29px 50px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 16px;
+  background-color: #CC0100;
+  padding: 26px 30px;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
   text-align: left;
-  margin-left: -50px;
-  margin-right: -50px;
-  margin-top: 0px;
   width: 100%;
+  margin: 0;
 }
 
 .signup {
@@ -346,11 +345,10 @@ header .search-bar input {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
   font-weight: 400;
   font-size: 1rem;
-  width: 80%;
-
+  width: 88%;
+  margin-top: 15px;
 }
 
 .user-form input {
@@ -381,17 +379,26 @@ header .search-bar input {
 }
 
 .user-form button {
-  line-height: 1.75;
-  width: 100%;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 400;
-  padding: 8px 16px;
-  color: rgba(255, 255, 255, 0.9);
-  background: linear-gradient(270deg, var(--oxygen-palette-gradients-primary-stop2), var(--oxygen-palette-gradients-primary-stop1));
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 2px;
-  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  font-weight: 700;
+  height: 50px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  transition: all 0.1s ease-in 0s;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 12px 0px;
+  border-radius: 40px;
+  padding: 10px 28px;
+  background: rgb(204, 0, 0) !important;
   border: none;
+  text-align: center;
+  display: flex;
+  width: 256px;
+  margin: 10px auto !important;
+  color: white;
 }
 
 .user-form button:hover {
