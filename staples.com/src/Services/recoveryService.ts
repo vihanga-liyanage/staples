@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-const PASSWORD_RECOVERY_ENDPOINT = "api/users/v2/recovery/password";
+const PASSWORD_RECOVERY_ENDPOINT = "/api/users/v2/recovery/password";
 
 // Function to initialize password recovery
 export const initPasswordRecovery = async (baseUrl: string, accessToken: string, identifier: string) => {
+
   try {
     const response = await axios.post(`${baseUrl}${PASSWORD_RECOVERY_ENDPOINT}/init`, {
       claims: [

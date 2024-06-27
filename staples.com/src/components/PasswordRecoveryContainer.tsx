@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Typography, Alert } from '@mui/material';
 import { initPasswordRecovery, recoverPassword, confirmPasswordRecovery, resetPassword, initPasswordRecoveryWithMobile } from './../Services/recoveryService';
 import { getToken } from './../Services/tokenservice'; 
-import staplesBackground from '../assets/images/staples-background.png'; // Add a suitable background image
 
 interface PasswordRecoveryContainerProps {
   onClose: () => void;
@@ -180,7 +179,6 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       flexDirection: 'column',
       alignItems: 'center',
       padding: '20px',
-      backgroundImage: `url(${staplesBackground})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       height: '100vh',
@@ -198,10 +196,10 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
         {step === 1 && (
           <div>
             <Typography variant="h4" color="textSecondary" gutterBottom>
-              Forgot Password ?
+              Forgot Your Password?
             </Typography>
             <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
-              This happens. Please provide your email or username to proceed with resetting your password.
+              It happens. Don't worry. Please provide your email or username and we'll help you resetting your password.
             </Typography>
             <TextField
               label="Username or Email"
