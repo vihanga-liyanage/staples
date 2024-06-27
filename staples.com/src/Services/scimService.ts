@@ -60,3 +60,55 @@ export const getUserProductIds = async (baseUrl: string, accessToken: string) =>
   }
   return [];
 };
+
+// Update user products
+export const addUserProduct = async (baseUrl: string, accessToken: string, newProductId: number) => {
+  
+  const url = `${baseUrl}${SCIM2_ME_ENDPOINT}`;
+
+  try {
+    // First, get the current products
+    const getResponse = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/scim+json',
+      },
+    });
+
+    let updatedProducts = `${newProductId}`;
+    if (getResponse.data['urn:scim:wso2:schema']?.products) {
+      const currentProducts = getResponse.data['urn:scim:wso2:schema'].products;
+      updatedProducts = `${currentProducts},${newProductId}`;
+    }
+    
+    // Prepare the PATCH request payload
+    const data = {
+      schemas: ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+      Operations: [
+        {
+          op: "replace",
+          value: {
+            "urn:scim:wso2:schema": {
+              products: updatedProducts
+            }
+          }
+        }
+      ]
+    };
+
+    // Make the PATCH request
+    await axios.patch(url, data, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/scim+json',
+      },
+    });
+
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.log(err.response?.data?.error_description || err.message);
+    } else {
+      console.log(err);
+    }
+  }
+};

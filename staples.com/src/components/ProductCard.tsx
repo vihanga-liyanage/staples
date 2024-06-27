@@ -2,16 +2,23 @@ import { FunctionComponent, ReactElement } from 'react';
 import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-
-interface Product {
-  image_url: string;
-  product_name: string;
-  star_rating: number;
-  price: string;
-}
+import { Product } from '../App';
+import { addUserProduct } from '../Services/scimService';
 
 interface ProductCardProps {
   product: Product;
+}
+
+const envVariables = import.meta.env;
+
+const handleProductAdd = (product: Product) => {
+  console.log(product);
+  const accessToken = localStorage.getItem('userAccessToken');
+  if (accessToken) {
+    addUserProduct(envVariables.VITE_BASE_URL, accessToken, product.product_id);
+  } else {
+    console.log("Couldn't find access token!");
+  }
 }
 
 const ProductCard: FunctionComponent<ProductCardProps> = ({ product }): ReactElement => {
@@ -41,8 +48,11 @@ const ProductCard: FunctionComponent<ProductCardProps> = ({ product }): ReactEle
           {product.price}
         </Typography>
       </CardContent>
-      <Button variant="contained" style={{ backgroundColor: '#c00', color: '#fff', margin: '33px' }}>
-        Add
+      <Button variant="contained" 
+        style={{ backgroundColor: '#c00', color: '#fff', margin: '33px' }} 
+        onClick={() => { handleProductAdd(product); }}
+      >
+        Add to Favourites
       </Button>
     </Card>
   );

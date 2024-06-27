@@ -15,6 +15,8 @@ const UserProductList: FunctionComponent<UserProductListProps> = ({ products }):
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [userProductIDs, setUserProductIDs] = useState<number[]>([]);
+  const [noProducts, setNoProducts] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   async function populateUserProducts(accessToken: string|null) {
     if (accessToken != null)
@@ -35,12 +37,19 @@ const UserProductList: FunctionComponent<UserProductListProps> = ({ products }):
     if (userProductIDs.length > 0 && filteredProducts.length == 0) {
       const filtered = products.filter(product => userProductIDs.includes(product.product_id));
       setFilteredProducts(filtered);
+      if (filtered.length > 0) {
+        setNoProducts(false);
+      } 
     }
+    setIsLoading(false);
   }, [userProductIDs])
 
   return (
     <List sx={{ width: '100%', maxWidth: '360px',  }}>
-      { filteredProducts.map((product) => (
+      { !isLoading && noProducts &&
+        <span>No Favourites yet.</span>
+      }
+      { !isLoading && filteredProducts.map((product) => (
         <ListItem key={product.product_id}>
           <ListItemAvatar>
             <Avatar>
