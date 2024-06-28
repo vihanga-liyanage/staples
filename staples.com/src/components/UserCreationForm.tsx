@@ -1,9 +1,19 @@
+import { Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react';
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 
 const envVariables = import.meta.env;
 const IDENTITY_SERVER_URL = envVariables.VITE_BASE_URL; // Replace with your actual SCIM API URL
-function UserCreationForm() {
+
+interface UserCreationFormProps {
+  onClose: () => void;
+}
+
+const UserCreationForm = (props: UserCreationFormProps) => {
+
+  const { onClose } = props;
+
   const [username, setUsername] = useState('');
   const [firstname, setFirstName] = useState('');
   const [lastname, setLastName] = useState('');
@@ -111,72 +121,78 @@ function UserCreationForm() {
   };
 
   return (
-
-    <form className="user-form" onSubmit={handleSubmit}>
-      {error && <p className="error-message">Error creating user: {errorMessage}</p>}
-      {success && <p className="success-message">User created successfully!</p>}
-      <label htmlFor="username">Username</label>
-      <input
-        type="text"
-        id="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-        placeholder="Enter a unique username"
-      />
-      <br />
-      <label htmlFor="firstname">First Name</label>
-      <input
-        type="text"
-        id="firstname"
-        value={firstname}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-        placeholder='Enter your first name'
-      />
-      <br />
-      <label htmlFor="lastname">Last Name</label>
-      <input
-        type="text"
-        id="lastname"
-        value={lastname}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-        placeholder='Enter your last name'
-      />
-      <br />
-      <label htmlFor="email">Email</label>
-      <input
-        type="email"
-        id="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        placeholder='Enter your email address'
-      />
-      <br />
-      <label htmlFor="mobilenumber">Mobile Number</label>
-      <input
-        type="mobilenumber"
-        id="mobilenumber"
-        value={mobilenumber}
-        onChange={(e) => setMobileNumber(e.target.value)}
-        required
-        placeholder='Enter your mobile number'
-      />
-      <br />
-      <label htmlFor="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        placeholder='Enter a password'
-      />
-      <br />
-      <button type="submit">Create User</button>
-    </form>
+    <div className='sign-up-box-container'>
+      <h5 className='sign-up-title'>Create an account</h5>
+      <div className='back-to-sign-in-container' onClick={ () => onClose()}>
+        <ArrowBackOutlinedIcon/>
+        <Typography variant='body2'>  Back to Sign in</Typography>
+      </div>
+      <form className="user-form" onSubmit={() => handleSubmit}>
+        {error && <p className="error-message">Error creating user: {errorMessage}</p>}
+        {success && <p className="success-message">User created successfully!</p>}
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          placeholder="Enter a unique username"
+        />
+        <br />
+        <label htmlFor="firstname">First Name</label>
+        <input
+          type="text"
+          id="firstname"
+          value={firstname}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+          placeholder='Enter your first name'
+        />
+        <br />
+        <label htmlFor="lastname">Last Name</label>
+        <input
+          type="text"
+          id="lastname"
+          value={lastname}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+          placeholder='Enter your last name'
+        />
+        <br />
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder='Enter your email address'
+        />
+        <br />
+        <label htmlFor="mobilenumber">Mobile Number</label>
+        <input
+          type="mobilenumber"
+          id="mobilenumber"
+          value={mobilenumber}
+          onChange={(e) => setMobileNumber(e.target.value)}
+          required
+          placeholder='Enter your mobile number'
+        />
+        <br />
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder='Enter a password'
+        />
+        <br />
+        <button type="submit">Create account</button>
+      </form>
+    </div>
   );
 }
 

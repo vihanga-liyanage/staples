@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Typography, Alert } from '@mui/material';
 import { initPasswordRecovery, recoverPassword, confirmPasswordRecovery, resetPassword, initPasswordRecoveryWithMobile } from './../Services/recoveryService';
 import { getToken } from './../Services/tokenservice'; 
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 
 interface PasswordRecoveryContainerProps {
   onClose: () => void;
@@ -174,126 +175,109 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: '20px',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      height: '100vh',
-      overflowY: 'auto'
-    }}>
-      <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        padding: '20px',
-        borderRadius: '8px',
-        maxWidth: '500px',
-        width: '100%',
-        marginTop: '20px',
-        textAlign: 'center'
-      }}>
-        {step === 1 && (
-          <div>
-            <Typography variant="h4" color="textSecondary" gutterBottom>
-              Forgot Your Password?
-            </Typography>
-            <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
-              It happens. Don't worry. Please provide your email or username and we'll help you resetting your password.
-            </Typography>
-            <TextField
-              label="Username or Email"
-              placeholder="Type your username or email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
-            <Button onClick={handleForgetPassword} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-              INITIATE RESET
-            </Button>
+    <div className='sign-up-box-container'>
+      {step === 1 && (
+        <>
+          <h5 className='sign-up-title'>Forgot password?</h5>
+          <div className='back-to-sign-in-container' onClick={ () => onClose()}>
+            <ArrowBackOutlinedIcon/>
+            <Typography variant='body2'>  Back to Sign in</Typography>
           </div>
-        )}
-        {step === 1.5 && (
-          <div>
-            <Typography variant="h4" color="textSecondary" gutterBottom>
-              Provide Mobile Number
-            </Typography>
-            <TextField
-              label="Mobile Number"
-              placeholder="Type your mobile number"
-              value={mobileNumber}
-              onChange={(e) => setMobileNumber(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
-            <Button onClick={handleRecoverWithMobile} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-              SEND RESET
-            </Button>
-          </div>
-        )}
-        {step === 2 && (
-          <div>
-            <Typography variant="h4" color="textSecondary" gutterBottom>
-              Recover Password
-            </Typography>
-            <p>An OTP has been sent to your mobile. Please enter the OTP below to proceed resetting your password.</p>
-            <TextField 
-              label="OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <Button onClick={handleConfirm} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
-              CONFIRM OTP
-            </Button>
-          </div>
-        )}
-        {step === 3 && (
-          <div>
-            <Typography variant="h4" color="textSecondary" gutterBottom>
-              Reset Your Password
-            </Typography>
-            <TextField
-              type="password"
-              label="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <Button onClick={handleReset} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
-              RESET PASSWORD
-            </Button>
-          </div>
-        )}
-        {step === 4 && (
-          <div>
-            <Typography variant="h4" color="textSecondary" gutterBottom>
-              Password Reset Successful
-            </Typography>
-            <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
-              Your password has been reset successfully. You can now log in with your new password.
-            </Typography>
-            <Button onClick={handleLoginRedirect} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-              GO TO LOGIN
-            </Button>
-          </div>
-        )}
-        {errorMessage && step !== 1 && step !== 1.5 && (
-          <div>
-            <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>
-          </div>
-        )}
-        {step !== 1 && step !== 4 && (
-          <Button onClick={handleRestart} variant="outlined" color="secondary" style={{ marginTop: '10px' }}>
-            Restart Password Reset
+          <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
+            It happens. Don't worry. Please provide your email or username and we'll help you resetting your password.
+          </Typography>
+          <TextField
+            label="Username or Email"
+            placeholder="Type your username or email"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
+          <Button onClick={handleForgetPassword} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
+            INITIATE RESET
           </Button>
-        )}
-      </div>
+        </>
+      )}
+      {step === 1.5 && (
+        <div>
+          <Typography variant="h4" color="textSecondary" gutterBottom>
+            Provide Mobile Number
+          </Typography>
+          <TextField
+            label="Mobile Number"
+            placeholder="Type your mobile number"
+            value={mobileNumber}
+            onChange={(e) => setMobileNumber(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
+          <Button onClick={handleRecoverWithMobile} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
+            SEND RESET
+          </Button>
+        </div>
+      )}
+      {step === 2 && (
+        <div>
+          <Typography variant="h4" color="textSecondary" gutterBottom>
+            Recover Password
+          </Typography>
+          <p>An OTP has been sent to your mobile. Please enter the OTP below to proceed resetting your password.</p>
+          <TextField 
+            label="OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button onClick={handleConfirm} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
+            CONFIRM OTP
+          </Button>
+        </div>
+      )}
+      {step === 3 && (
+        <div>
+          <Typography variant="h4" color="textSecondary" gutterBottom>
+            Reset Your Password
+          </Typography>
+          <TextField
+            type="password"
+            label="New Password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button onClick={handleReset} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
+            Reset password
+          </Button>
+        </div>
+      )}
+      {step === 4 && (
+        <div>
+          <Typography variant="h4" color="textSecondary" gutterBottom>
+            Password Reset Successful
+          </Typography>
+          <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
+            Your password has been reset successfully. You can now log in with your new password.
+          </Typography>
+          <Button onClick={handleLoginRedirect} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
+            GO TO LOGIN
+          </Button>
+        </div>
+      )}
+      {errorMessage && step !== 1 && step !== 1.5 && (
+        <div>
+          <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>
+        </div>
+      )}
+      {step !== 1 && step !== 4 && (
+        <Button onClick={handleRestart} variant="outlined" color="secondary" style={{ marginTop: '10px' }}>
+          Restart Password Reset
+        </Button>
+      )}
     </div>
   );
 };
