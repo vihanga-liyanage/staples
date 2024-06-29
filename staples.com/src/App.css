@@ -524,3 +524,22 @@ header .search-bar input {
   flex-direction: column;
   align-items: center;
 }
+
+.success-animation {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  background-color: #0cba12; /* Green */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  animation: fadeInOut 3s;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}

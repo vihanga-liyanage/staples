@@ -62,7 +62,7 @@ export const getUserProductIds = async (baseUrl: string, accessToken: string) =>
 };
 
 // Update user products
-export const addUserProduct = async (baseUrl: string, accessToken: string, newProductId: number) => {
+export const addUserProduct = async (baseUrl: string, accessToken: string, newProductId: number): Promise<boolean> => {
   
   const url = `${baseUrl}${SCIM2_ME_ENDPOINT}`;
 
@@ -103,12 +103,13 @@ export const addUserProduct = async (baseUrl: string, accessToken: string, newPr
         'Content-Type': 'application/scim+json',
       },
     });
-
+    return true;
   } catch (err) {
     if (axios.isAxiosError(err)) {
       console.log(err.response?.data?.error_description || err.message);
     } else {
       console.log(err);
     }
+    return false;
   }
 };

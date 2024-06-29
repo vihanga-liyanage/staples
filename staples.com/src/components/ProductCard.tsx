@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactElement } from 'react';
+import { FunctionComponent, ReactElement, useState } from 'react';
 import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -11,17 +11,28 @@ interface ProductCardProps {
 
 const envVariables = import.meta.env;
 
-const handleProductAdd = (product: Product) => {
-  console.log(product);
-  const accessToken = localStorage.getItem('userAccessToken');
-  if (accessToken) {
-    addUserProduct(envVariables.VITE_BASE_URL, accessToken, product.product_id);
-  } else {
-    console.log("Couldn't find access token!");
-  }
-}
-
 const ProductCard: FunctionComponent<ProductCardProps> = ({ product }): ReactElement => {
+
+  const [showAnimation, setShowAnimation] = useState(false);
+
+  const handleProductAdd = async (product: Product) => {
+
+    const accessToken = localStorage.getItem('userAccessToken');
+    if (accessToken) {
+      const isSuccess = await addUserProduct(envVariables.VITE_BASE_URL, accessToken, product.product_id);
+      if (isSuccess === true) {
+        setShowAnimation(true);
+        setTimeout(() => setShowAnimation(false), 3000);
+        
+      } else {
+        console.log('Product add failed');
+        
+      }
+    } else {
+      console.log("Couldn't find access token!");
+    }
+  }
+
   const renderStars = (rating: number): ReactElement[] => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
@@ -54,6 +65,8 @@ const ProductCard: FunctionComponent<ProductCardProps> = ({ product }): ReactEle
       >
         Add to Favourites
       </Button>
+      {showAnimation && <div className="success-animation">✔️ Product Added Successfully!</div>}
+
     </Card>
   );
 };
