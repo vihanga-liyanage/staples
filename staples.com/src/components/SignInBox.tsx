@@ -60,7 +60,7 @@ const SignInBox = (props: SignInBoxProps) => {
             (authenticator: any) => authenticator.authenticator === 'Identifier First');
 
         if (identifierFirstAuthenticator) {
-            setIdfAuthCount((prevCount) => prevCount + 1);
+            setIdfAuthCount(idfAuthCount + 1);
         } else {
             setShowNonUniqueUsernameError(false);
         }
