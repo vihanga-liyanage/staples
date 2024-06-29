@@ -9,6 +9,7 @@ const Impersonation: FunctionComponent = (): ReactElement => {
   const [impersonatedAccessToken, setImpersonateAccessToken] = useState<string>("");
   const [impersonateeUserId, setImpersonateeUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const envVariables = import.meta.env;
 
@@ -74,15 +75,17 @@ const Impersonation: FunctionComponent = (): ReactElement => {
     if (impersonateeUsernameQueryParam) {
 
       // If impersonateeUsernameQueryParam is present in the URL, save it and trigger auth
+      setIsLoading(true);
       localStorage.setItem('impersonateeUsername', impersonateeUsernameQueryParam);
       localStorage.removeItem('impersonateeUserId');
       localStorage.removeItem('impersonatorAccessToken');
       localStorage.removeItem('userAccessToken');
-      setError(null);    
+      setError(null);
       window.location.href = generateAuthUrl();
     } else if (code) {
 
       // If auth code is present in the URL, request token
+      setIsLoading(true);
       fetchToken(code)
         .then(data => {          
           localStorage.setItem('impersonatorAccessToken', data.access_token);
@@ -94,6 +97,7 @@ const Impersonation: FunctionComponent = (): ReactElement => {
     } else if (window.location.hash) {
 
       // If # is present in the URL, extract and save idToken and subjectToken
+      setIsLoading(true);
       const fragments = parseUrlFragment(window.location.href);
       setIdToken(fragments.id_token);
       setSubjectToken(fragments.subject_token);
@@ -101,6 +105,7 @@ const Impersonation: FunctionComponent = (): ReactElement => {
     } else if (!impersonateeUserId && impersonateeUsernameFromLocalStorage && impersonatorAccessToken) {
       
       // If impersonateeUsername and impersonatorAccessToken is found in the localstorage, get impersonatee user ID
+      setIsLoading(true);
       if (localStorage.getItem('impersonateeUserId')) {
         setImpersonateeUserId(localStorage.getItem('impersonateeUserId'));
       } else {
@@ -120,8 +125,10 @@ const Impersonation: FunctionComponent = (): ReactElement => {
   
   // If subjectToken and idToken is present, trigger impersonation
   useEffect(() => {
+    
     const fetchImpersonationAccessToken = async () => {
       if (subjectToken && idToken) {
+        setIsLoading(true);
         try {
           const response = await exchangeToken({
             subjectToken,
@@ -130,6 +137,7 @@ const Impersonation: FunctionComponent = (): ReactElement => {
                     
           setImpersonateAccessToken(response.access_token);
           localStorage.setItem('userAccessToken', response.access_token);
+          setIsLoading(false);
           
         } catch (err) {
           console.log('Failed to exchange token');
@@ -142,6 +150,11 @@ const Impersonation: FunctionComponent = (): ReactElement => {
 
   return (
     <>
+      { isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+        </div>
+      )}
       { impersonatedAccessToken && 
         <div className="impersonated-token">
           <h3><b>Impersonated Access Token for <strong>{localStorage.getItem('impersonateeUsername')}</strong></b></h3>
