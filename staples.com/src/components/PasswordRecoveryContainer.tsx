@@ -174,74 +174,130 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
     setMobileNumber('');
   };
 
+  const resolveTitle = () => {
+    switch (step) {
+      case 1:
+        return 'Forgot password?';
+      case 1.5:
+        return 'Provide Mobile Number';
+      case 2:
+        return 'Recover Password';
+      case 3:
+        return 'Reset Your Password';
+      case 4:
+        return 'Password Reset Successful';
+      default:
+        return 'Forgot password?';
+    }
+  }
+
+  const resolveDescription = () => {
+    switch (step) {
+      case 1:
+        return 'It happens. Don\'t worry. Please provide your email or username and we\'ll help you resetting your password.';
+      case 1.5:
+        return 'Please provide your mobile number to proceed with password recovery.';
+      case 2:
+        return 'An OTP has been sent to your mobile. Please enter the OTP below to proceed resetting your password.';
+      case 3:
+        return 'Enter your new password below to reset your password.';
+      case 4:
+        return 'Your password has been reset successfully. You can now log in with your new password.';
+      default:
+        return 'It happens. Don\'t worry. Please provide your email or username and we\'ll help you resetting your password.';
+    }
+  }
+
+
   return (
     <div className='sign-up-box-container'>
+        <h5 className='sign-up-title'>{ resolveTitle() }</h5>
+        <div className='back-to-sign-in-container' onClick={ () => onClose()}>
+          <ArrowBackOutlinedIcon/>
+          <Typography variant='body2'>  Back to Sign in</Typography>
+        </div>
+        <Typography variant="body2" color="textSecondary" style={{ marginTop: '20px', marginBottom: '10px' }}>
+          { resolveDescription() }
+        </Typography>
       {step === 1 && (
         <>
-          <h5 className='sign-up-title'>Forgot password?</h5>
-          <div className='back-to-sign-in-container' onClick={ () => onClose()}>
-            <ArrowBackOutlinedIcon/>
-            <Typography variant='body2'>  Back to Sign in</Typography>
-          </div>
-          <Typography variant="body2" color="textSecondary" style={{ marginTop: '20px' }}>
-            It happens. Don't worry. Please provide your email or username and we'll help you resetting your password.
-          </Typography>
-          <TextField
-            label="Username or Email"
-            placeholder="Type your username or email"
+          <label htmlFor="username">Username or Email</label>
+          <input
+            type="text"
+            id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            fullWidth
-            margin="normal"
+            required
+            placeholder="Enter your username or email"
           />
           {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
-          <Button onClick={handleForgetPassword} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-            INITIATE RESET
-          </Button>
+          <div className='button-container'>
+            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+              Cancel
+            </a>
+            <Button
+              variant='outlined'
+              className='form-primary-button'
+              onClick={() => { handleForgetPassword(); }}
+            >
+                Submit
+            </Button>
+          </div>
         </>
       )}
       {step === 1.5 && (
-        <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
-            Provide Mobile Number
-          </Typography>
-          <TextField
-            label="Mobile Number"
-            placeholder="Type your mobile number"
+        <>
+          <label htmlFor="mobileNumber">Mobile Number</label>
+          <input
+            type="text"
+            id="mobileNumber"
             value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
-            fullWidth
-            margin="normal"
+            required
+            placeholder="Enter your mobile number"
           />
-          {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
-          <Button onClick={handleRecoverWithMobile} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-            SEND RESET
-          </Button>
-        </div>
+          {errorMessage && <Alert severity="warning" style={{ marginTop: '20px' }}>{errorMessage}</Alert>}
+          <div className='button-container'>
+            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+              Cancel
+            </a>
+            <Button
+              variant='outlined'
+              className='form-primary-button'
+              onClick={() => { handleRecoverWithMobile() }}
+            >
+                Submit
+            </Button>
+          </div>
+        </>
       )}
       {step === 2 && (
-        <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
-            Recover Password
-          </Typography>
-          <p>An OTP has been sent to your mobile. Please enter the OTP below to proceed resetting your password.</p>
-          <TextField 
-            label="OTP"
+        <>
+          <label htmlFor="otp">OTP</label>
+          <input
+            type="text"
+            id="otp"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
-            fullWidth
-            margin="normal"
+            required
+            placeholder="Enter your OTP"
           />
-          <Button onClick={handleConfirm} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
-            CONFIRM OTP
-          </Button>
-        </div>
+          <div className='button-container'>
+            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+              Cancel
+            </a>
+            <Button
+              variant='outlined'
+              className='form-primary-button'
+              onClick={() => { handleConfirm() }}
+            >
+                Confirm OTP
+            </Button>
+          </div>
+        </>
       )}
       {step === 3 && (
-        <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
-            Reset Your Password
-          </Typography>
+        <>
           <TextField
             type="password"
             label="New Password"
@@ -250,31 +306,41 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
             fullWidth
             margin="normal"
           />
-          <Button onClick={handleReset} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
-            Reset password
-          </Button>
-        </div>
+          <div className='button-container'>
+            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+              Cancel
+            </a>
+            <Button
+              variant='outlined'
+              className='form-primary-button'
+              onClick={() => { handleReset() }}
+            >
+                Reset password
+            </Button>
+          </div>
+        </>
       )}
       {step === 4 && (
-        <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
-            Password Reset Successful
-          </Typography>
-          <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
-            Your password has been reset successfully. You can now log in with your new password.
-          </Typography>
-          <Button onClick={handleLoginRedirect} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-            GO TO LOGIN
-          </Button>
-        </div>
+        <>
+          <Button
+              variant='outlined'
+              className='form-primary-button'
+              onClick={() => { handleLoginRedirect() }}
+            >
+                Go to login
+            </Button>
+        </>
       )}
       {errorMessage && step !== 1 && step !== 1.5 && (
-        <div>
-          <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>
-        </div>
+        <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>
       )}
       {step !== 1 && step !== 4 && (
-        <Button onClick={handleRestart} variant="outlined" color="secondary" style={{ marginTop: '10px' }}>
+        <Button 
+          onClick={ () => handleRestart() }
+          variant="outlined"
+          style={{ marginTop: '20px' }}
+          className='create-account-button'
+        >
           Restart Password Reset
         </Button>
       )}
