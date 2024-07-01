@@ -156,7 +156,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
 
     try {
       console.log('Resending OTP');
-      const data = await resendOTP(envVariables.VITE_BASE_URL, accessToken, resendCode, channelId);
+      const data = await resendOTP(envVariables.VITE_BASE_URL, accessToken, resendCode);
       console.log('Response from recoverPassword (resend):', data);
 
       if (data.flowConfirmationCode) {
