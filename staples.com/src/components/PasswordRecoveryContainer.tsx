@@ -232,7 +232,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
           />
           {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
           <div className='button-container'>
-            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+            <a href="#" style={{ color: "black" }} onClick={ () => handleRestart()}>
               Cancel
             </a>
             <Button
@@ -258,7 +258,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
           />
           {errorMessage && <Alert severity="warning" style={{ marginTop: '20px' }}>{errorMessage}</Alert>}
           <div className='button-container'>
-            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+            <a href="#" style={{ color: "black" }} onClick={ () => handleRestart()}>
               Cancel
             </a>
             <Button
@@ -283,7 +283,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
             placeholder="Enter your OTP"
           />
           <div className='button-container'>
-            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+            <a href="#" style={{ color: "black" }} onClick={ () => handleRestart()}>
               Cancel
             </a>
             <Button
@@ -307,7 +307,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
             margin="normal"
           />
           <div className='button-container'>
-            <a href="#" style={{ color: "black" }} onClick={ () => onClose()}>
+            <a href="#" style={{ color: "black" }} onClick={ () => handleRestart()}>
               Cancel
             </a>
             <Button
@@ -333,16 +333,6 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       )}
       {errorMessage && step !== 1 && step !== 1.5 && (
         <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>
-      )}
-      {step !== 1 && step !== 4 && (
-        <Button 
-          onClick={ () => handleRestart() }
-          variant="outlined"
-          style={{ marginTop: '20px' }}
-          className='create-account-button'
-        >
-          Restart Password Reset
-        </Button>
       )}
     </div>
   );

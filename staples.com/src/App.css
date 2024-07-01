@@ -270,11 +270,12 @@ header .search-bar input {
 .sign-up-box-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background-color: white;
   min-width: 100px;
   padding: 0px 30px;
+  height: 100%;
 }
 
 .sign-up-title {
@@ -391,11 +392,13 @@ header .search-bar input {
   width: 100%;
   margin-top: 15px;
   padding: 0px;
+  height: 100%;
 }
 
 .user-form input {
   height: 2.5em;
   margin: 0px;
+  margin-bottom: 10px;
   animation-name: mui-auto-fill-cancel;
   animation-duration: 10ms;
   font-weight: 400;
@@ -440,6 +443,7 @@ input::placeholder {
   font-size: 1rem;
   width: 100%;
   text-align: left;
+  color: #505050;
 }
 
 label {
@@ -447,29 +451,6 @@ label {
   font-size: 1rem;
   width: 100%;
   text-align: left;
-}
-
-.user-form button {
-  font-weight: 700;
-  height: 50px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  -webkit-box-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  justify-content: center;
-  transition: all 0.1s ease-in 0s;
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 12px 0px;
-  border-radius: 40px;
-  padding: 10px 28px;
-  background: rgb(204, 0, 0) !important;
-  border: none;
-  text-align: center;
-  display: flex;
-  width: 256px;
-  margin: 10px auto !important;
-  color: white;
 }
 
 .form-primary-button {
@@ -544,19 +525,19 @@ label {
   border: none;
   text-align: center;
   display: flex;
-  width: 256px;
+  width: 180px;
   margin: 10px auto !important;
 }
 
 .create-account-button {
-  justify-content: center;
-  transition: all 0.1s ease-in 0s;
-  box-shadow: none;
+  justify-content: center !important;
+  transition: all 0.1s ease-in 0s !important;
+  box-shadow: none !important;
   border-radius: 30px !important;
-  padding: 9px 27px !important;
+  padding: 7px 27px !important;
   border: 1px solid rgb(150, 150, 150) !important;
-  display: flex;
-  width: 256px;
+  background: white !important;
+  display: flex !important;
   color: #000 !important;
   text-transform: none !important;
   font-weight: 700 !important;
@@ -635,4 +616,26 @@ label {
   width: 100%;
   justify-content: flex-end;
   flex-wrap: wrap;
+}
+
+.bottom-container {
+  box-shadow: rgba(156, 156, 156, 0.7) 0px 0px 6px;
+  width: 500px;
+  padding: 10px 30px;
+}
+
+.form-parent-container {
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.form-field-container {
+  padding: 10px 30px;
+}
+
+.form-input {
+  margin-bottom: 10px;
 }
