@@ -183,7 +183,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
             <ArrowBackOutlinedIcon/>
             <Typography variant='body2'>  Back to Sign in</Typography>
           </div>
-          <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
+          <Typography variant="body2" color="textSecondary" style={{ marginTop: '20px' }}>
             It happens. Don't worry. Please provide your email or username and we'll help you resetting your password.
           </Typography>
           <TextField
