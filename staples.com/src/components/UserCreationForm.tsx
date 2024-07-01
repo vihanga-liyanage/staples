@@ -1,7 +1,6 @@
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react';
-import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -148,13 +147,11 @@ const UserCreationForm = (props: UserCreationFormProps) => {
   };
 
   return (
-    <div className='sign-up-box-container'>
+   <div className='sign-up-box-container'>
       <h5 className='sign-up-title'>Create an account</h5>
-      <div className='back-to-sign-in-container' onClick={() => onClose()}>
-        <ArrowBackOutlinedIcon />
-        <Typography variant='body2'>  Back to Sign in</Typography>
-      </div>
-      <form className="user-form" onSubmit={() => handleSubmit}>
+      <form className="user-form" onSubmit={handleSubmit}>
+        <div className='form-parent-container'>
+          <div className='form-field-container'>
         {error && <p className="error-message">Error creating user: {errorMessage}</p>}
         {success && <p className="success-message">User created successfully!</p>}
         <label htmlFor="username">Username<span style={{ color: 'red' }}>*</span></label>
@@ -240,28 +237,31 @@ const UserCreationForm = (props: UserCreationFormProps) => {
             </InputAdornment>
           }
         />
-        <br />
-        <button className="submit" type="submit">Create account</button>
-      </form>
-
-
-      <div className="sign-in-box-bottom-content">
-        <p className="MuiTypography-root MuiTypography-body2 css-1i3b7bz-MuiTypography-root">By signing up, you agree to Staples Easy Rewards</p>
-        <p className="MuiTypography-root MuiTypography-body2 css-e784if-MuiTypography-root">
-          <a href="#" className="color: black;">Terms and Conditions</a>
-        </p>
-        <p className="MuiTypography-root MuiTypography-body2 css-t0dgfv-MuiTypography-root">Federal Government Customers<span> </span>
-          <a href="#" style={{ color: 'black' }}>click here </a>
-        </p>  
-        <div className="privacy-notice-container">
-          <span className="MuiTypography-root MuiTypography-caption css-1mv2l5-MuiTypography-root">
-            <a href="#" style={{ color: 'black' }}>Privacy Notice</a>
-          </span>
-          <span className="MuiTypography-root MuiTypography-caption css-1mv2l5-MuiTypography-root">
-            <a href="#" style={{ color: 'black' }}>California Notice</a>
-          </span>
         </div>
-      </div>
+        <div className='button-container bottom-container'>
+<Typography variant='caption'>
+              By creating an account, you agree to Staples and 
+              Easy Rewards <a href='#'>Terms & Conditions</a>, <a href='#'>Privacy Notice</a>, <a href='#'>California Notice</a>. 
+              You also agree to receive Staples promotional 
+              communications. You may unsubscribe at any time.
+            </Typography>
+            <Button
+                variant='outlined'
+                className='create-account-button'
+                onClick={() => { onClose(); }}
+            >
+                Sign in
+            </Button>
+            <Button
+              variant='contained'
+              className='form-primary-button'
+              type='submit'
+            >
+              Create account
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
 
   );

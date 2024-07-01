@@ -35,6 +35,18 @@ const SignInBox = (props: SignInBoxProps) => {
 
     useEffect(() => {        
         if (idfAuthCount === 2) {
+            // Change the label of the username field to "Mobile Number"
+            const label = document.querySelector('.MuiFormLabel-root');
+            const input = document.querySelector('.MuiInputBase-input') as HTMLInputElement;
+            
+            if (input) {
+              input.placeholder = 'Enter your mobile number';
+            }
+            
+            if (label) {
+              label.textContent = 'Mobile Number';
+            }
+
             setUsername("")
             setShowNonUniqueUsernameError(true);
         } else {
