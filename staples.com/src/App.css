@@ -270,11 +270,12 @@ header .search-bar input {
 .sign-up-box-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background-color: white;
   min-width: 100px;
   padding: 0px 30px;
+  height: 100%;
 }
 
 .sign-up-title {
@@ -391,9 +392,28 @@ header .search-bar input {
   width: 100%;
   margin-top: 15px;
   padding: 0px;
+  height: 100%;
 }
 
 .user-form input {
+  height: 2.5em;
+  margin: 0px;
+  margin-bottom: 10px;
+  animation-name: mui-auto-fill-cancel;
+  animation-duration: 10ms;
+  font-weight: 400;
+  font-size: 1rem;
+  cursor: text;
+  width: 100%;
+  border-radius: 4px;
+  padding-left: 15px;
+  border-color: #bdbdbd;
+  text-align: left;
+  border-style: solid;
+  border-width: 1px;
+}
+
+input {
   height: 2.5em;
   margin: 0px;
   animation-name: mui-auto-fill-cancel;
@@ -409,7 +429,12 @@ header .search-bar input {
   border-style: solid;
   border-width: 1px;
 }
+
 .user-form input::placeholder {
+  color: #c7c7c7;
+}
+
+input::placeholder {
   color: #c7c7c7;
 }
 
@@ -418,11 +443,18 @@ header .search-bar input {
   font-size: 1rem;
   width: 100%;
   text-align: left;
+  color: #505050;
 }
 
-.user-form button {
-  font-weight: 700;
-  height: 50px;
+label {
+  font-weight: 400;
+  font-size: 1rem;
+  width: 100%;
+  text-align: left;
+}
+
+.form-primary-button {
+  font-weight: 700 !important;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -431,16 +463,18 @@ header .search-bar input {
   -webkit-box-pack: center;
   justify-content: center;
   transition: all 0.1s ease-in 0s;
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 12px 0px;
-  border-radius: 40px;
-  padding: 10px 28px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 12px 0px !important;
+  border-radius: 40px !important;
+  padding: 10px 28px !important;
   background: rgb(204, 0, 0) !important;
   border: none;
   text-align: center;
   display: flex;
-  width: 256px;
-  margin: 10px auto !important;
-  color: white;
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+  margin-left: 20px !important;
+  color: white !important;
+  text-transform: none !important;
 }
 
 .user-form button:hover {
@@ -491,19 +525,19 @@ header .search-bar input {
   border: none;
   text-align: center;
   display: flex;
-  width: 256px;
+  width: 180px;
   margin: 10px auto !important;
 }
 
 .create-account-button {
-  justify-content: center;
-  transition: all 0.1s ease-in 0s;
-  box-shadow: none;
+  justify-content: center !important;
+  transition: all 0.1s ease-in 0s !important;
+  box-shadow: none !important;
   border-radius: 30px !important;
-  padding: 9px 27px !important;
+  padding: 7px 27px !important;
   border: 1px solid rgb(150, 150, 150) !important;
-  display: flex;
-  width: 256px;
+  background: white !important;
+  display: flex !important;
   color: #000 !important;
   text-transform: none !important;
   font-weight: 700 !important;
@@ -572,4 +606,36 @@ header .search-bar input {
   justify-content: center;
   align-items: center;
   z-index: 1000; /* Lower than success animation */
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.bottom-container {
+  box-shadow: rgba(156, 156, 156, 0.7) 0px 0px 6px;
+  width: 500px;
+  padding: 10px 30px;
+}
+
+.form-parent-container {
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.form-field-container {
+  padding: 10px 30px;
+}
+
+.form-input {
+  margin-bottom: 10px;
 }
