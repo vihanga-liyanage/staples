@@ -103,7 +103,7 @@ export const confirmPasswordRecovery = async (baseUrl: string, accessToken: stri
   }
 };
 
-export const resendOTP = async (baseUrl: string, accessToken: string, resendCode: string, otp: string) => {
+export const resendOTP = async (baseUrl: string, accessToken: string, resendCode: string) => {
   try {
     const response = await axios.post(`${baseUrl}${PASSWORD_RECOVERY_ENDPOINT}/resend`, {
       resendCode,
