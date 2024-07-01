@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Typography, Alert } from '@mui/material';
-import { initPasswordRecovery, recoverPassword, confirmPasswordRecovery, resetPassword, initPasswordRecoveryWithMobile } from './../Services/recoveryService';
-import { getToken } from './../Services/tokenservice'; 
+import { Button, TextField, Typography, Alert, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { initPasswordRecovery, recoverPassword, confirmPasswordRecovery, resetPassword, initPasswordRecoveryWithMobile, resendOTP } from './../Services/recoveryService';
+import { getToken } from './../Services/tokenservice';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 
 interface PasswordRecoveryContainerProps {
@@ -12,17 +13,17 @@ const envVariables = import.meta.env;
 
 const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ onClose }) => {
   const [username, setUsername] = useState('');
-  // const [recoveryCode, setRecoveryCode] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [otp, setOtp] = useState('');
   const [resetCode, setResetCode] = useState('');
+  const [resendCode, setResendCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [step, setStep] = useState(1);
-  // const [flowConfirmationCode, setFlowConfirmationCode] = useState('');
   const [channelId, setChannelId] = useState('2'); // Assuming default channelId for mobile
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mobileNumber, setMobileNumber] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   const tokenEndpoint = `${envVariables.VITE_BASE_URL}/oauth2/token`;
 
@@ -45,6 +46,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
     if (!accessToken) return;
 
     try {
+      setErrorMessage(null);
       console.log('Starting password recovery initiation');
       const response = await initPasswordRecovery(envVariables.VITE_BASE_URL, accessToken, username);
       console.log('Response from initPasswordRecovery:', response);
@@ -56,8 +58,6 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       } else if (response.status === 200) {
         console.log("Account found, proceeding with recovery");
         const data = response.data;
-        // setFlowConfirmationCode(data[0].flowConfirmationCode);
-        // setRecoveryCode(data[0].channelInfo.recoveryCode);
         handleRecover(data[0].channelInfo.recoveryCode); // Trigger the recovery method directly after finding the account
       }
     } catch (error: any) {
@@ -80,8 +80,6 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       if (response.status === 200) {
         setErrorMessage(null);
         const data = response.data;
-        // setFlowConfirmationCode(data[0].flowConfirmationCode);
-        // setRecoveryCode(data[0].channelInfo.recoveryCode);
         handleRecover(data[0].channelInfo.recoveryCode); // Trigger the recovery method directly after providing the mobile number
       }
     } catch (error: any) {
@@ -104,6 +102,10 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       if (data.flowConfirmationCode) {
         setConfirmationCode(data.flowConfirmationCode);
         setStep(2); // Move to step 2 to validate OTP
+      }
+
+      if(data.resendCode) {
+        setResendCode(data.resendCode)
       }
     } catch (error: any) {
       console.error('Error recovering password', error);
@@ -129,7 +131,30 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
     } catch (error: any) {
       console.error('Error confirming password recovery', error);
       if (error.response && (error.response.status >= 400 && error.response.status < 600)) {
-        setErrorMessage('Error confirming password recovery. Please try again later.');
+        setErrorMessage('OTP confirmation has failed. Please try again.');
+        setStep(2.5); // Move to step 2.5 for resending OTP
+      }
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!accessToken) return;
+
+    try {
+      console.log('Resending OTP');
+      const data = await resendOTP(envVariables.VITE_BASE_URL, accessToken, resendCode, channelId);
+      console.log('Response from recoverPassword (resend):', data);
+
+      if (data.flowConfirmationCode) {
+        setConfirmationCode(data.flowConfirmationCode);
+        setErrorMessage(null);
+        setStep(2); // Move back to step 2 to enter the new OTP
+        
+      }
+    } catch (error: any) {
+      console.error('Error resending OTP', error);
+      if (error.response && (error.response.status >= 400 && error.response.status < 600)) {
+        setErrorMessage('Error resending OTP. Please try again later.');
         setStep(1); // Reset to the initial step
       }
     }
@@ -163,28 +188,30 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
   const handleRestart = () => {
     setStep(1);
     setUsername('');
-    // setRecoveryCode('');
     setConfirmationCode('');
     setOtp('');
     setResetCode('');
     setNewPassword('');
-    // setFlowConfirmationCode('');
     setChannelId('2');
     setErrorMessage(null);
     setMobileNumber('');
   };
 
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <div className='sign-up-box-container'>
+      <h5 className='sign-up-title'>Forgot password ?</h5>
       {step === 1 && (
         <>
-          <h5 className='sign-up-title'>Forgot password?</h5>
-          <div className='back-to-sign-in-container' onClick={ () => onClose()}>
-            <ArrowBackOutlinedIcon/>
-            <Typography variant='body2'>  Back to Sign in</Typography>
+          <div className='back-to-sign-in-container' onClick={() => onClose()}>
+            <ArrowBackOutlinedIcon />
+            <Typography variant='body2'>Back to Sign in</Typography>
           </div>
           <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
-            It happens. Don't worry. Please provide your email or username and we'll help you resetting your password.
+            It happens. Don't worry. Please provide your email or username and we'll help you reset your password.
           </Typography>
           <TextField
             label="Username or Email"
@@ -196,13 +223,13 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
           />
           {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
           <Button onClick={handleForgetPassword} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-            INITIATE RESET
+            Initiate Reset
           </Button>
         </>
       )}
       {step === 1.5 && (
         <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
             Provide Mobile Number
           </Typography>
           <TextField
@@ -213,15 +240,15 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
             fullWidth
             margin="normal"
           />
-          {errorMessage && <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
+          {errorMessage && <Alert severity="warning" style={{ marginTop: '10px' }}>{errorMessage}</Alert>}
           <Button onClick={handleRecoverWithMobile} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-            SEND RESET
+            Send Reset
           </Button>
         </div>
       )}
       {step === 2 && (
         <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
             Recover Password
           </Typography>
           <p>An OTP has been sent to your mobile. Please enter the OTP below to proceed resetting your password.</p>
@@ -232,39 +259,55 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
             fullWidth
             margin="normal"
           />
-          <Button onClick={handleConfirm} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
+          <Button onClick={handleConfirm} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
             CONFIRM OTP
+          </Button>
+        </div>
+      )}
+      {step === 2.5 && (
+        <div>
+          <Button onClick={handleResendOtp} variant="contained" color="primary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
+           Resend OTP
           </Button>
         </div>
       )}
       {step === 3 && (
         <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
             Reset Your Password
           </Typography>
           <TextField
-            type="password"
+            type={showPassword ? "text" : "password"}
             label="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             fullWidth
             margin="normal"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleTogglePasswordVisibility}>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
-          <Button onClick={handleReset} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white' }}>
+          <Button onClick={handleReset} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
             Reset password
           </Button>
         </div>
       )}
       {step === 4 && (
         <div>
-          <Typography variant="h4" color="textSecondary" gutterBottom>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
             Password Reset Successful
           </Typography>
           <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
             Your password has been reset successfully. You can now log in with your new password.
           </Typography>
           <Button onClick={handleLoginRedirect} variant="contained" color="secondary" style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
-            GO TO LOGIN
+            Go to Login
           </Button>
         </div>
       )}
@@ -273,8 +316,8 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
           <Alert severity="error" style={{ marginTop: '10px' }}>{errorMessage}</Alert>
         </div>
       )}
-      {step !== 1 && step !== 4 && (
-        <Button onClick={handleRestart} variant="outlined" color="secondary" style={{ marginTop: '10px' }}>
+      {step !== 1 && step !== 4  && step !== 2.5 && (
+        <Button onClick={handleRestart} variant="outlined" color="primary" style={{ marginTop: '10px' }}>
           Restart Password Reset
         </Button>
       )}
