@@ -420,7 +420,7 @@ header .search-bar input {
   text-align: left;
 }
 
-.user-form button {
+.submit{
   font-weight: 700;
   height: 50px;
   cursor: pointer;
@@ -442,6 +442,32 @@ header .search-bar input {
   margin: 10px auto !important;
   color: white;
 }
+
+.password-input{
+  width: 100%;
+  border-color: #bdbdbd;
+  text-align: left;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  height: 2.5em;
+}
+
+#password {
+  border: none;
+}
+
+#password::placeholder {
+  color: #7a7a7a;
+}
+
+.showpassword-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  position: fixed;
+}
+
 
 .user-form button:hover {
   cursor: hand;

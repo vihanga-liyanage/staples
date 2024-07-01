@@ -2,6 +2,11 @@ import { Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import IconButton from "@material-ui/core/IconButton";
+import Visibility from "@material-ui/icons/Visibility";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import Input from "@material-ui/core/Input";
 
 const envVariables = import.meta.env;
 const IDENTITY_SERVER_URL = envVariables.VITE_BASE_URL; // Replace with your actual SCIM API URL
@@ -24,6 +29,10 @@ const UserCreationForm = (props: UserCreationFormProps) => {
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [accessToken, setAccessToken] = useState('');
+  const [values, setValues] = React.useState({
+    password: "",
+    showPassword: false,
+  });
 
   const resetForm = () => {
     setSuccess(false);
@@ -40,13 +49,13 @@ const UserCreationForm = (props: UserCreationFormProps) => {
     const clientId = envVariables.VITE_CLIENT_ID; // Replace with your client ID
     const clientSecret = envVariables.VITE_CLIENT_SECRET; // Replace with your client secret
     const tokenEndpoint = IDENTITY_SERVER_URL + "/oauth2/token"; // Replace with your token endpoint URL
-  
+
     const credentials = btoa(`${clientId}:${clientSecret}`);
-  
+
     const params = new URLSearchParams();
     params.append('grant_type', 'client_credentials');
     params.append('scope', 'internal_user_mgt_create');
-  
+
     try {
       const response = await axios.post(tokenEndpoint, params, {
         headers: {
@@ -54,7 +63,7 @@ const UserCreationForm = (props: UserCreationFormProps) => {
           ContentType: 'application/x-www-form-urlencoded',
         },
       });
-  
+
       return response.data.access_token; // Return the access token
     } catch (error) {
       console.error('Error fetching access token:', error);
@@ -120,17 +129,35 @@ const UserCreationForm = (props: UserCreationFormProps) => {
     }
   };
 
+  const handlePasswordChange = (prop: string) => (event: { target: { value: any; }; }) => {
+    setValues({
+      ...values,
+      [prop]: event.target.value,
+    });
+  };
+
+  const handleClickShowPassword = () => {
+    setValues({
+      ...values,
+      showPassword: !values.showPassword,
+    });
+  };
+
+  const handleMouseDownPassword = (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+  };
+
   return (
     <div className='sign-up-box-container'>
       <h5 className='sign-up-title'>Create an account</h5>
-      <div className='back-to-sign-in-container' onClick={ () => onClose()}>
-        <ArrowBackOutlinedIcon/>
+      <div className='back-to-sign-in-container' onClick={() => onClose()}>
+        <ArrowBackOutlinedIcon />
         <Typography variant='body2'>  Back to Sign in</Typography>
       </div>
       <form className="user-form" onSubmit={() => handleSubmit}>
         {error && <p className="error-message">Error creating user: {errorMessage}</p>}
         {success && <p className="success-message">User created successfully!</p>}
-        <label htmlFor="username">Username</label>
+        <label htmlFor="username">Username<span style={{ color: 'red' }}>*</span></label>
         <input
           type="text"
           id="username"
@@ -140,7 +167,7 @@ const UserCreationForm = (props: UserCreationFormProps) => {
           placeholder="Enter a unique username"
         />
         <br />
-        <label htmlFor="firstname">First Name</label>
+        <label htmlFor="firstname">First Name<span style={{ color: 'red' }}>*</span></label>
         <input
           type="text"
           id="firstname"
@@ -150,7 +177,7 @@ const UserCreationForm = (props: UserCreationFormProps) => {
           placeholder='Enter your first name'
         />
         <br />
-        <label htmlFor="lastname">Last Name</label>
+        <label htmlFor="lastname">Last Name<span style={{ color: 'red' }}>*</span></label>
         <input
           type="text"
           id="lastname"
@@ -160,7 +187,7 @@ const UserCreationForm = (props: UserCreationFormProps) => {
           placeholder='Enter your last name'
         />
         <br />
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email">Email<span style={{ color: 'red' }}>*</span></label>
         <input
           type="email"
           id="email"
@@ -170,7 +197,7 @@ const UserCreationForm = (props: UserCreationFormProps) => {
           placeholder='Enter your email address'
         />
         <br />
-        <label htmlFor="mobilenumber">Mobile Number</label>
+        <label htmlFor="mobilenumber">Mobile Number<span style={{ color: 'red' }}>*</span></label>
         <input
           type="mobilenumber"
           id="mobilenumber"
@@ -180,19 +207,63 @@ const UserCreationForm = (props: UserCreationFormProps) => {
           placeholder='Enter your mobile number'
         />
         <br />
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
+        <label htmlFor="password">Password<span style={{ color: 'red' }}>*</span></label>
+        <Input
+          className="password-input"
+          type={
+            values.showPassword
+              ? "text"
+              : "password"
+          }
           id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordChange("password")}
+          value={values.password}
           required
           placeholder='Enter a password'
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                className="showpassword-button"
+                onClick={
+                  handleClickShowPassword
+                }
+                onMouseDown={
+                  handleMouseDownPassword
+                }
+              >
+                {values.showPassword ? (
+                  <Visibility />
+                ) : (
+                  <VisibilityOff />
+                )}
+              </IconButton>
+            </InputAdornment>
+          }
         />
         <br />
-        <button type="submit">Create account</button>
+        <button className="submit" type="submit">Create account</button>
       </form>
+
+
+      <div className="sign-in-box-bottom-content">
+        <p className="MuiTypography-root MuiTypography-body2 css-1i3b7bz-MuiTypography-root">By signing up, you agree to Staples Easy Rewards</p>
+        <p className="MuiTypography-root MuiTypography-body2 css-e784if-MuiTypography-root">
+          <a href="#" className="color: black;">Terms and Conditions</a>
+        </p>
+        <p className="MuiTypography-root MuiTypography-body2 css-t0dgfv-MuiTypography-root">Federal Government Customers<span> </span>
+          <a href="#" style={{ color: 'black' }}>click here </a>
+        </p>  
+        <div className="privacy-notice-container">
+          <span className="MuiTypography-root MuiTypography-caption css-1mv2l5-MuiTypography-root">
+            <a href="#" style={{ color: 'black' }}>Privacy Notice</a>
+          </span>
+          <span className="MuiTypography-root MuiTypography-caption css-1mv2l5-MuiTypography-root">
+            <a href="#" style={{ color: 'black' }}>California Notice</a>
+          </span>
+        </div>
+      </div>
     </div>
+
   );
 }
 
