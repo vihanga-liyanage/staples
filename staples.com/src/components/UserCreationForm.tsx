@@ -93,7 +93,8 @@ const UserCreationForm = (props: UserCreationFormProps) => {
         }
       ]
     };
-
+    var errorDetail = '';
+    var errorLocal = false;
     try {
       const response = await axios.post(`${IDENTITY_SERVER_URL}/scim2/Users`, user, {
         headers: {
@@ -102,24 +103,33 @@ const UserCreationForm = (props: UserCreationFormProps) => {
           'Access-Control-Allow-Origin': '*',
         },
       });
-
       if (response.status === 201) { // Success status code for user creation in SCIM is 201
         console.log('User created successfully!');
         resetForm();
         setSuccess(true);
       } else {
         const errorData = response.data;
-        const errorDetail = errorData?.detail || 'Unknown error creating user'; // Handle missing detail
-        setErrorMessage(errorDetail);
+        errorDetail = errorData?.detail || 'Unknown error creating user'; 
         console.error('Error creating user:', errorDetail);
         setSuccess(false);
         setError(true);
+        errorLocal = true;
       }
     } catch (error) {
-      setErrorMessage((error as any).response?.data?.detail || 'Unknown error creating user');
-      console.error('Error creating user:', (error as any).response?.data?.detail || error);
+      errorDetail = (error as any).response?.data?.detail || 'Unknown error creating user';
+      console.error('Error creating user:', errorDetail);
       setSuccess(false);
       setError(true);
+      errorLocal = true;
+    }
+    if(errorLocal){
+      if(errorDetail=='The minimum length of password should be 8.'){
+        setErrorMessage('The minimum length of password should be 8.');
+      }else if(errorDetail=='Password is too common or found to be in compromised dictionaries. Pick a different one'){
+        setErrorMessage('Password is too common or found to be in compromised dictionaries. Pick a different one');
+      }else{
+        setErrorMessage(errorDetail);
+      }
     }
   };
 
@@ -147,7 +157,7 @@ const UserCreationForm = (props: UserCreationFormProps) => {
       <form className="user-form" onSubmit={handleSubmit}>
         <div className='form-parent-container'>
           <div className='form-field-container'>
-        {error && <p className="error-message">Error creating user: {errorMessage}</p>}
+        {error && <p className="error-message">{errorMessage}</p>}
         {success && <p className="success-message">Your new Staples account has been created!</p>}
         <label htmlFor="username">Username<span style={{ color: 'red' }}>*</span></label>
         <input
