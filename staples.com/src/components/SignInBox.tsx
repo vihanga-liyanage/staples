@@ -12,9 +12,11 @@ import Checkbox from "@mui/material/Checkbox";
 
 interface SignInBoxProps {
     idfAuthCount: number;
+    isAuthenticatorsAvailable: boolean;
     setDrawerOpen: (open: boolean) => void;
     setForgotPasswordOpen: (open: boolean) => void;
     setIdfAuthCount: (count: number) => void;
+    setIsAuthenticatorsAvailable: (available: boolean) => void;
     toggleSignupOverlay: () => void;
 }
 
@@ -22,18 +24,21 @@ const SignInBox = (props: SignInBoxProps) => {
 
     const {
         idfAuthCount,
+        isAuthenticatorsAvailable,
         setDrawerOpen,
         setForgotPasswordOpen,
         setIdfAuthCount,
+        setIsAuthenticatorsAvailable,
         toggleSignupOverlay
     } = props;
 
     const { authResponse, isGlobalLoading, setUsername } = useAuthentication();    
 
     const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
-    const [isAuthenticatorsAvailable, setIsAuthenticatorsAvailable] = useState<boolean>(true);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-    useEffect(() => {        
+
+    useEffect(() => {
         if (idfAuthCount === 2) {
             // Change the label of the username field to "Mobile Number"
             const label = document.querySelector('.MuiFormLabel-root');
@@ -55,9 +60,19 @@ const SignInBox = (props: SignInBoxProps) => {
     }, [idfAuthCount, setUsername]);
 
     useEffect(() => {
+        if (authResponse?.flowStatus === "SUCCESS_COMPLETED") {
+            setIdfAuthCount(-1);
+            setShowNonUniqueUsernameError(false);
+            setUsername("");
+            setIsAuthenticatorsAvailable(true);
+            setIsLoggedIn(true);
+
+            return;
+        }
+        
         if (authResponse) {
             checkForNonUniqueUsername(authResponse);
-            setIsAuthenticatorsAvailable(authResponse?.nextStep?.authenticators?.length > 0);
+            idfAuthCount !== -1 && idfAuthCount !== 0 && setIsAuthenticatorsAvailable(authResponse?.nextStep?.authenticators?.length > 0);
         }
     }, [authResponse]);
 
@@ -87,22 +102,23 @@ const SignInBox = (props: SignInBoxProps) => {
         setIdfAuthCount(0);
         setShowNonUniqueUsernameError(false);
         setUsername("");
+        setIsAuthenticatorsAvailable(true);
     };
 
     return (
         <>
-            {!isGlobalLoading && !isAuthenticatorsAvailable && (
+            {!isLoggedIn && !isGlobalLoading && !isAuthenticatorsAvailable && (
                 <div className="sign-in-box-bottom-content">
                     <Alert severity="error" sx={{ padding: "20px", margin: "50px 10px" }}>
                         <AlertTitle>Error has occured!</AlertTitle>
-                        Something went wrong... Authenticators are not available!
+                        Something went wrong... Please try signing again.
                     </Alert>
                     <Button
                         variant='outlined'
                         className='create-account-button'
                         onClick={() => { handleSignInReset(); }}
                     >
-                        Try again
+                        Close
                     </Button>
                 </div>
             )}
@@ -138,9 +154,22 @@ const SignInBox = (props: SignInBoxProps) => {
                             />
                         </div>
                     }
+                    brandingProps={{
+                        locale: 'en-US',
+                        preference: {
+                          text: {
+                            'en-US': {
+                              login: {
+                                'enter.your.username': 'Enter your Email or Username',
+                                'username': 'Email or Username'
+                              }
+                            }
+                          }
+                        }
+                    }}
                 />
                 {
-                    !isGlobalLoading && isAuthenticatorsAvailable && (
+                    !isLoggedIn && !isGlobalLoading && isAuthenticatorsAvailable && (
                         <div className='sign-in-box-bottom-content'>
                             <Typography variant="body2" sx={{ marginTop: "10px" }}>
                                 By signing in, you agree to Staples Easy Rewards
