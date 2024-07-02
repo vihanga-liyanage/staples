@@ -33,8 +33,24 @@ const SignInBox = (props: SignInBoxProps) => {
     const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
     const [isAuthenticatorsAvailable, setIsAuthenticatorsAvailable] = useState<boolean>(true);
 
-    useEffect(() => {        
-        if (idfAuthCount === 2) {
+    useEffect(() => {   
+             
+        if (idfAuthCount === 1 || idfAuthCount === 0) {
+            // Change the label of the username field
+            const label = document.querySelector('.MuiFormLabel-root');
+            const input = document.querySelector('.MuiInputBase-input') as HTMLInputElement;
+            
+            if (input) {
+              input.placeholder = 'Enter your username of Email';
+            }
+            
+            if (label) {
+              label.textContent = 'Username or Email';
+            }
+            
+            setUsername("")
+            setShowNonUniqueUsernameError(false);
+        } else if (idfAuthCount === 2) {
             // Change the label of the username field to "Mobile Number"
             const label = document.querySelector('.MuiFormLabel-root');
             const input = document.querySelector('.MuiInputBase-input') as HTMLInputElement;
@@ -83,6 +99,7 @@ const SignInBox = (props: SignInBoxProps) => {
     };
 
     const handleSignInReset = () => {
+        
         setDrawerOpen(false);
         setIdfAuthCount(0);
         setShowNonUniqueUsernameError(false);

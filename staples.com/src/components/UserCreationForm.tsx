@@ -63,6 +63,7 @@ const UserCreationForm = (props: UserCreationFormProps) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
     var localAccessToken = accessToken;
     if (!localAccessToken) {
       const fetchedToken = await fetchAccessToken();
@@ -122,11 +123,11 @@ const UserCreationForm = (props: UserCreationFormProps) => {
   return (
     <div className='sign-up-box-container'>
       <h5 className='sign-up-title'>Create an account</h5>
-      <form className="user-form" onSubmit={() => handleSubmit}>
+      <form className="user-form" onSubmit={handleSubmit}>
         <div className='form-parent-container'>
           <div className='form-field-container'>
             {error && <p className="error-message">Error creating user: {errorMessage}</p>}
-            {success && <p className="success-message">User created successfully!</p>}
+            {success && <p className="success-message">Your new Staples account created successfully!</p>}
             <label htmlFor="username">Username</label>
             <input
               type="text"
