@@ -41,6 +41,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [idfAuthCount, setIdfAuthCount] = useState<number>(0);
+  const [isAuthenticatorsAvailable, setIsAuthenticatorsAvailable] = useState<boolean>(true);
 
   const openModal = (): void => {
     setModalVisible(true);
@@ -98,6 +99,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   const handleSignInClick = () => {
     setDrawerOpen(true);
+    setIsAuthenticatorsAvailable(true);
   }
 
   const handleSignOutClick = () => {
@@ -111,6 +113,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   const toggleSignupOverlay = () => {
     setShowSignUp(true);
+    setIsAuthenticatorsAvailable(true);
   }
 
   const resolveDrawerContent = () => {
@@ -139,9 +142,11 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     return (
       <SignInBox
         idfAuthCount={idfAuthCount}
+        isAuthenticatorsAvailable={isAuthenticatorsAvailable}
         setDrawerOpen={setDrawerOpen}
         setForgotPasswordOpen={setShowForgotPassword}
         setIdfAuthCount={setIdfAuthCount}
+        setIsAuthenticatorsAvailable={setIsAuthenticatorsAvailable}
         toggleSignupOverlay={toggleSignupOverlay}
       />
     )
