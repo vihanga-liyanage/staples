@@ -477,6 +477,33 @@ label {
   text-transform: none !important;
 }
 
+.password-input{
+  width: 100%;
+  border-color: #bdbdbd;
+  text-align: left;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  height: 2.5em;
+}
+
+#password {
+  border: none;
+  height: 2.5em;
+}
+
+#password::placeholder {
+  color: #7a7a7a;
+}
+
+.showpassword-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  position: fixed;
+}
+
+
 .user-form button:hover {
   cursor: hand;
 }
