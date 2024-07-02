@@ -98,6 +98,7 @@ const SignInBox = (props: SignInBoxProps) => {
     };
 
     const handleSignInReset = () => {
+        
         setDrawerOpen(false);
         setIdfAuthCount(0);
         setShowNonUniqueUsernameError(false);

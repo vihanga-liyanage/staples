@@ -103,6 +103,23 @@ export const confirmPasswordRecovery = async (baseUrl: string, accessToken: stri
   }
 };
 
+export const resendOTP = async (baseUrl: string, accessToken: string, resendCode: string) => {
+  try {
+    const response = await axios.post(`${baseUrl}${PASSWORD_RECOVERY_ENDPOINT}/resend`, {
+      resendCode,
+    }, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending OTP', error);
+    throw error;
+  }
+};
+
 // Function to reset password
 export const resetPassword = async (baseUrl: string, accessToken: string, resetCode: string, flowConfirmationCode: string, newPassword: string) => {
   try {
