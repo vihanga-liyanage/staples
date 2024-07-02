@@ -54,6 +54,11 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
     fetchToken();
   }, [tokenEndpoint, envVariables.VITE_CLIENT_ID, envVariables.VITE_CLIENT_SECRET]);
 
+  useEffect(() => {
+    setUsername('');
+    setMobileNumber('');
+  }, [errorMessage]);
+
   const handleForgetPassword = async () => {
     if (!accessToken) return;
 
@@ -186,8 +191,21 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
     } catch (error: any) {
       console.error('Error resetting password', error);
       if (error.response && error.response.status >= 400 && error.response.status < 600) {
-        setErrorMessage('Error resetting password. Please try again later.');
-        setStep(1); // Reset to the initial step
+        setErrorMessage('Error resetting password. Please try again.');
+        if (error.response.status === 412) {
+          console.log("error.response.data.code: "+ error.response.data.code);
+          if (error.response.data.code.includes("The password should contain at least 1 special characters")) {
+              setStep(3);
+              setErrorMessage('The password should contain at least 1 special characters');
+          }
+          if (error.response.data.code.includes("Password is too common" )) {
+            setErrorMessage("Password is too common. Please pick a different one.")
+            setNewPassword('');
+            setStep(3);
+          }
+        } else {
+          setStep(1); // Reset to the initial step
+        }
       }
     }
   };
@@ -367,6 +385,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
               )
             }}
           />
+          {errorMessage && <Alert severity="warning" style={{ marginTop: '20px' }}>{errorMessage}</Alert>}
           <div className='button-container'>
             <a href="#" style={{ color: "black" }} onClick={() => onClose()}>
               Cancel
@@ -383,6 +402,11 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
       )}
       {step === 4 && (
         <>
+          <Alert 
+            severity="success" 
+            style={{ marginTop: '20px' }}
+            >{"Password reset successful !"}
+          </Alert>
           <Button
             variant='outlined'
             className='form-primary-button'
