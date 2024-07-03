@@ -37,7 +37,6 @@ const SignInBox = (props: SignInBoxProps) => {
     const [showNonUniqueUsernameError, setShowNonUniqueUsernameError] = useState<boolean>(false);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-
     useEffect(() => {
         if (idfAuthCount === 2) {
             // Change the label of the username field to "Mobile Number"
@@ -57,7 +56,7 @@ const SignInBox = (props: SignInBoxProps) => {
         } else {
             setShowNonUniqueUsernameError(false);
         }
-    }, [idfAuthCount, setUsername]);
+    }, [idfAuthCount]);
 
     useEffect(() => {
         if (authResponse?.flowStatus === "SUCCESS_COMPLETED") {
@@ -98,9 +97,7 @@ const SignInBox = (props: SignInBoxProps) => {
     };
 
     const handleSignInReset = () => {
-        
         setDrawerOpen(false);
-        setIdfAuthCount(0);
         setShowNonUniqueUsernameError(false);
         setUsername("");
         setIsAuthenticatorsAvailable(true);

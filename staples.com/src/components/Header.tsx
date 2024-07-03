@@ -40,7 +40,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
   const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [idfAuthCount, setIdfAuthCount] = useState<number>(0);
+  const [idfAuthCount, setIdfAuthCount] = useState<number>(-1);
   const [isAuthenticatorsAvailable, setIsAuthenticatorsAvailable] = useState<boolean>(true);
 
   const openModal = (): void => {
@@ -99,6 +99,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
   const handleSignInClick = () => {
     setDrawerOpen(true);
+    setIdfAuthCount(-1);
     setIsAuthenticatorsAvailable(true);
   }
 
@@ -121,7 +122,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       return (
         <UserCreationForm
           onClose={() => {
-            setIdfAuthCount(-1)
+            setIdfAuthCount(-1);
             setShowSignUp(false)
           }}
         />
@@ -132,7 +133,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
       return (
         <PasswordRecoveryContainer
           onClose={() => {
-            setIdfAuthCount(-1)
+            setIdfAuthCount(-1);
             setShowForgotPassword(false)
           }}
         />
