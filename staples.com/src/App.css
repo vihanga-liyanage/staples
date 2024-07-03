@@ -666,3 +666,16 @@ label {
 .form-input {
   margin-bottom: 10px;
 }
+
+.copy-token-button{
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 8px 16px;
+  margin-left: 10px;
+  width: 100px;
+}

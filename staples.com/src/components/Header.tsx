@@ -152,6 +152,20 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     )
   };
 
+  const [isCopied, setIsCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(accessToken);
+      setIsCopied(true);
+      console.log('Copied to clipboard:', accessToken);
+    } catch (error) {
+      setIsCopied(false);
+      console.error('Unable to copy to clipboard:', error);
+    }
+  };
+
+
   return (
     <header>
       {modalVisible && (
@@ -174,7 +188,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         <SearchIcon />
         <input type="text" placeholder="Search..." />
       </div>
-
+      
       {isSignedIn && !impersonatorUserName &&
         <>
           <h5 style={{ padding: '0px 10px 0px 10px' }}>
@@ -191,6 +205,13 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
           <button className="sign-out-button" onClick={() => { handleSignOutClick(); }}>End Impersonation Session</button>
         </>
       }
+      {isSignedIn &&
+            <div>
+            <button className="copy-token-button" onClick={() => copyToClipboard()}>
+              {isCopied ? 'Copied!' : 'Copy Token'}
+            </button>
+          </div>
+        }
       <div className="header-buttons">
         {!isSignedIn &&
           <button className="header-icon-button" onClick={() => { handleSignInClick(); }}><PersonIcon /></button>
@@ -201,6 +222,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         {isSignedIn &&
           <button className="header-icon-button" onClick={() => { openModal(); }}><ListIcon /></button>
         }
+       
       </div>
       <Drawer
         anchor='right'
