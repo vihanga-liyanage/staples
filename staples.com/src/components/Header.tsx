@@ -67,6 +67,9 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         setImpersonatorUserName(`${decoded.given_name} ${decoded.family_name}`);
         setIsSignedIn(true);
         setImpersonateeUsername(localStorage.getItem('impersonateeUsername'));
+        user.id = impersonateeUserId;
+        user.name.givenName = decoded.given_name;
+        user.name.familyName = decoded.family_name;
       } catch (error) {
         console.error('Failed to decode JWT token:', error);
       }
@@ -190,20 +193,12 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         <input type="text" placeholder="Search..." />
       </div>
       
-      {isSignedIn && !impersonatorUserName &&
+      {isSignedIn &&
         <>
           <h5 style={{ padding: '0px 10px 0px 10px' }}>
             Welcome, {user?.name?.givenName} {user?.name?.familyName}
           </h5>
           <SignOutButton />
-        </>
-      }
-      {isSignedIn && impersonatorUserName && impersonateeUsername &&
-        <>
-          <h5 style={{ padding: '0px 10px 0px 10px' }}>
-            Welcome, {impersonateeUsername} (Impersonator: {impersonatorUserName})
-          </h5>
-          <button className="sign-out-button" onClick={() => { handleSignOutClick(); }}>End Impersonation Session</button>
         </>
       }
       {isSignedIn &&
