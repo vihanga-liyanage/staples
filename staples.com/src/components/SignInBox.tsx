@@ -69,13 +69,22 @@ const SignInBox = (props: SignInBoxProps) => {
             return;
         }
         
+        checkForNonUniqueUsername(authResponse);
+
         if (authResponse) {
-            checkForNonUniqueUsername(authResponse);
             idfAuthCount !== -1 && idfAuthCount !== 0 && setIsAuthenticatorsAvailable(authResponse?.nextStep?.authenticators?.length > 0);
         }
     }, [authResponse]);
 
     const checkForNonUniqueUsername = (authResponse: any) => {
+        if (authResponse === undefined) {
+            // Increase the IDF Auth Count by 1
+            // To compensate for page reload
+            setIdfAuthCount(idfAuthCount + 1);
+
+            return;
+        }
+        
         // Check if the authentication flow is incomplete
         // Only allow the user to proceed if the flow is incomplete
         if (authResponse?.flowStatus !== "INCOMPLETE") return;
