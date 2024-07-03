@@ -199,7 +199,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
               setErrorMessage('The password should contain at least 1 special characters');
           }
           if (error.response.data.code.includes("Password is too common" )) {
-            setErrorMessage("Password is too common. Please pick a different one.")
+            setErrorMessage("The password you chose is too common or has been found in a recent data leak. Please pick a different one.")
             setNewPassword('');
             setStep(3);
           }
