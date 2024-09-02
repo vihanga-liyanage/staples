@@ -9,20 +9,10 @@ export const initPasswordRecovery = async (baseUrl: string, accessToken: string,
     const response = await axios.post(`${baseUrl}${PASSWORD_RECOVERY_ENDPOINT}/init`, {
       claims: [
         {
-          uri: "http://wso2.org/claims/username",
+          uri: "internal.user.identifier.claim.uri",
           value: identifier
         },
-        {
-          uri: "http://wso2.org/claims/emailaddress",
-          value: identifier
-        }
       ],
-      properties: [
-        {
-          key: "multiAttributeRecoveryEnabled",
-          value: "true"
-        }
-      ]
     }, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -46,12 +36,6 @@ export const initPasswordRecoveryWithMobile = async (baseUrl: string, accessToke
           value: mobile
         }
       ],
-      properties: [
-        {
-          key: "multiAttributeRecoveryEnabled",
-          value: "true"
-        }
-      ]
     }, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,

@@ -114,7 +114,7 @@ const PasswordRecoveryContainer: React.FC<PasswordRecoveryContainerProps> = ({ o
     if (!accessToken) return;
 
     try {
-      console.log('Starting password recovery confirmation');
+      console.log('Starting password recovery confirmation.');
       const data = await recoverPassword(envVariables.VITE_BASE_URL, accessToken, recoveryCodeUpdated, channelId);
       console.log('Response from recoverPassword:', data);
 
