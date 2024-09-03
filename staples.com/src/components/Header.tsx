@@ -29,7 +29,7 @@ interface HeaderProps {
 
 const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
 
-  const envVariables = import.meta.env;
+  // const envVariables = import.meta.env;
 
   const { user, accessToken, setUsername } = useAuthentication();
 
@@ -38,7 +38,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
   const [isShowSignUp, setShowSignUp] = useState<boolean>(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [impersonatorUserName, setImpersonatorUserName] = useState<string | null>(null);
-  const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
+  // const [impersonateeUsername, setImpersonateeUsername] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [idfAuthCount, setIdfAuthCount] = useState<number>(-1);
   const [isAuthenticatorsAvailable, setIsAuthenticatorsAvailable] = useState<boolean>(true);
@@ -66,7 +66,7 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
         const decoded: DecodedToken = jwtDecode(impersonatorAccessToken);
         setImpersonatorUserName(`${decoded.given_name} ${decoded.family_name}`);
         setIsSignedIn(true);
-        setImpersonateeUsername(localStorage.getItem('impersonateeUsername'));
+        // setImpersonateeUsername(localStorage.getItem('impersonateeUsername'));
         user.id = impersonateeUserId;
         user.name.givenName = decoded.given_name;
         user.name.familyName = decoded.family_name;
@@ -106,14 +106,14 @@ const Header: FunctionComponent<HeaderProps> = ({ products }): ReactElement => {
     setIsAuthenticatorsAvailable(true);
   }
 
-  const handleSignOutClick = () => {
-    console.log('Signing out...');
-    localStorage.removeItem('impersonateeUsername');
-    localStorage.removeItem('impersonatorAccessToken');
-    localStorage.removeItem('impersonateeUserId');
-    localStorage.removeItem('userAccessToken');
-    window.location.href = envVariables.VITE_CSR_APP_PATH;
-  }
+  // const handleSignOutClick = () => {
+  //   console.log('Signing out...');
+  //   localStorage.removeItem('impersonateeUsername');
+  //   localStorage.removeItem('impersonatorAccessToken');
+  //   localStorage.removeItem('impersonateeUserId');
+  //   localStorage.removeItem('userAccessToken');
+  //   window.location.href = envVariables.VITE_CSR_APP_PATH;
+  // }
 
   const toggleSignupOverlay = () => {
     setShowSignUp(true);
