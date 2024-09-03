@@ -155,16 +155,6 @@ const Impersonation: FunctionComponent = (): ReactElement => {
           <div className="loading-spinner"></div>
         </div>
       )}
-      { impersonatedAccessToken && 
-        <div className="impersonated-token">
-          <h3><b>Impersonated Access Token for <strong>{localStorage.getItem('impersonateeUsername')}</strong></b></h3>
-          <div className="code">
-              <code>
-                  <span className="id-token-0">{ impersonatedAccessToken }</span>
-              </code>
-          </div>
-        </div>
-      }
       { error &&
         <div className='overlay'>
           <div className='errorBox'>

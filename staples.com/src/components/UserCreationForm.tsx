@@ -123,11 +123,11 @@ const UserCreationForm = (props: UserCreationFormProps) => {
       errorLocal = true;
     }
     if(errorLocal){
-      if(errorDetail=='The minimum length of password should be 8.'){
+      if (errorDetail=='The minimum length of password should be 8.'){
         setErrorMessage('The minimum length of password should be 8.');
-      }else if(errorDetail=='Password is too common or found to be in compromised dictionaries. Pick a different one'){
-        setErrorMessage('Password is too common or found to be in compromised dictionaries. Pick a different one');
-      }else{
+      } else if (errorDetail=='Password is too common or found to be in compromised dictionaries. Pick a different one'){
+        setErrorMessage('Your password is too common or found in a recent data leak. Please pick a different one.');
+      } else {
         setErrorMessage(errorDetail);
       }
     }
